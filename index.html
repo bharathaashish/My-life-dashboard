@@ -12,16 +12,30 @@
     </header>
 
     <main>
+        <!-- To-Do Widget -->
         <section class="widget" id="todo-widget">
-    <h2>To-Do List</h2>
-    <input type="text" id="todo-input" placeholder="Add a new task">
-    <button id="add-task">Add</button>
-    <ul id="todo-list">
-    </ul>
-</section>
+            <h2>To-Do List</h2>
+            <input type="text" id="todo-input" placeholder="Add a new task">
+            <button id="add-task">Add</button>
+            <ul id="todo-list"></ul>
+        </section>
 
+        <!-- Pomodoro Timer Widget -->
+        <section class="widget" id="pomodoro-widget">
+            <h2>Pomodoro Timer</h2>
+            <div>
+                <button id="set-25-5">25 / 5 min</button>
+                <button id="set-50-10">50 / 10 min</button>
+            </div>
+            <div id="timer-display">00:00</div>
+            <button id="start-timer">Start</button>
+            <button id="stop-timer">Stop</button>
+            <button id="reset-timer">Reset</button>
+            <p id="work-total">Total Work Time: 0 mins</p>
+        </section>
     </main>
 
     <script src="js/script.js"></script>
 </body>
 </html>
+
