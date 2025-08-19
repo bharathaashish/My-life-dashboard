@@ -98,8 +98,9 @@ document.addEventListener('DOMContentLoaded', () => {
 	let breakMinutes = parseInt(localStorage.getItem('breakMinutes') || '5', 10);
 	let isRunning = false;
 	let isWork = true;
-	let secondsLeft = workMinutes * 60;
+	let millisecondsLeft = workMinutes * 60 * 1000;
 	let timerId = null;
+	let totalWorkMilliseconds = parseInt(localStorage.getItem('totalWorkMilliseconds') || '0', 10);
 
 	const timerDisplay = qs('#timer-display');
 	const startBtn = qs('#start-timer');
@@ -110,23 +111,26 @@ document.addEventListener('DOMContentLoaded', () => {
 	const workInput = qs('#work-time-input');
 	const breakInput = qs('#break-time-input');
 	const saveSettingsBtn = qs('#save-timer-settings');
+	const workTotalDisplay = qs('#work-total');
 
-	function formatTime(s) {
-		const m = Math.floor(s / 60).toString().padStart(2, '0');
-		const sec = (s % 60).toString().padStart(2, '0');
-		return `${m}:${sec}`;
+	function formatTime(ms) {
+		const totalSeconds = Math.floor(ms / 1000);
+		const minutes = Math.floor(totalSeconds / 60).toString().padStart(2, '0');
+		const seconds = (totalSeconds % 60).toString().padStart(2, '0');
+		const milliseconds = Math.floor((ms % 1000) / 10).toString().padStart(2, '0');
+		return `${minutes}:${seconds}:${milliseconds}`;
 	}
 
 	function updateTimerDisplay() {
-		if (timerDisplay) timerDisplay.textContent = formatTime(secondsLeft);
+		if (timerDisplay) timerDisplay.textContent = formatTime(millisecondsLeft);
 	}
 
 	function tick() {
-		secondsLeft -= 1;
-		if (secondsLeft < 0) {
+		millisecondsLeft -= 10;
+		if (millisecondsLeft < 0) {
 			// Switch modes
 			isWork = !isWork;
-			secondsLeft = (isWork ? workMinutes : breakMinutes) * 60;
+			millisecondsLeft = (isWork ? workMinutes : breakMinutes) * 60 * 1000;
 			// lightweight notification
 			try { window.navigator.vibrate && window.navigator.vibrate(200); } catch (e) {}
 			if (isWork) alert('Break over — back to work!'); else alert('Work session complete — take a break!');
@@ -137,7 +141,7 @@ document.addEventListener('DOMContentLoaded', () => {
 	function startTimer() {
 		if (isRunning) return;
 		isRunning = true;
-		timerId = setInterval(tick, 1000);
+		timerId = setInterval(tick, 10);
 	}
 
 	function stopTimer() {
@@ -148,7 +152,7 @@ document.addEventListener('DOMContentLoaded', () => {
 	function resetTimer() {
 		stopTimer();
 		isWork = true;
-		secondsLeft = workMinutes * 60;
+		millisecondsLeft = workMinutes * 60 * 1000;
 		updateTimerDisplay();
 	}
 

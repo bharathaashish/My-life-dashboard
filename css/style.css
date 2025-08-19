@@ -234,6 +234,16 @@ button.calendar-cell { text-align: left; }
     border-color: var(--border) !important;
 }
 
+/* Light mode: widget backgrounds */
+section, .widget {
+    background-color: #fdfeffd0; /* ash grey */
+    color: #111827;
+}
+
+input, textarea, button {
+    background-color: inherit;
+}
+
 .dark header {
     background-color: #07090c !important;
     color: var(--text) !important;
