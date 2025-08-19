@@ -254,5 +254,78 @@ document.addEventListener('DOMContentLoaded', () => {
 	if (eventInput) eventInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') addEvent(); });
 
 	renderCalendar(); renderEvents();
+
+	// DRAG & DROP: reorder widgets without changing their inner alignment
+	const grid = qs('#dashboard-grid');
+	function saveOrder() {
+		if (!grid) return;
+		const ids = Array.from(grid.querySelectorAll('section[data-widget]')).map(s => s.getAttribute('data-widget'));
+		localStorage.setItem('widget-order', JSON.stringify(ids));
+	}
+
+	function applySavedOrder() {
+		if (!grid) return;
+		const raw = localStorage.getItem('widget-order');
+		if (!raw) return;
+		try {
+			const ids = JSON.parse(raw);
+			ids.forEach(id => {
+				const el = grid.querySelector(`section[data-widget="${id}"]`);
+				if (el) grid.appendChild(el);
+			});
+		} catch (e) { }
+	}
+
+	applySavedOrder();
+
+	let dragSrc = null;
+
+	function onDragStart(e) {
+		dragSrc = this.closest('section[data-widget]');
+		e.dataTransfer.effectAllowed = 'move';
+		e.dataTransfer.setData('text/plain', dragSrc.getAttribute('data-widget'));
+		// add dragging visual
+		dragSrc.classList.add('dragging');
+	}
+
+	function onDragOver(e) {
+		e.preventDefault();
+		const sec = this.closest('section[data-widget]');
+		if (sec && sec !== dragSrc) sec.classList.add('drag-over');
+	}
+
+	function onDragLeave(e) {
+		const sec = this.closest('section[data-widget]');
+		if (sec) sec.classList.remove('drag-over');
+	}
+
+	function onDrop(e) {
+		e.preventDefault();
+		const target = this.closest('section[data-widget]');
+		if (!dragSrc || !target || dragSrc === target) return;
+		const children = Array.from(grid.querySelectorAll('section[data-widget]'));
+		const srcIndex = children.indexOf(dragSrc);
+		const tgtIndex = children.indexOf(target);
+		if (srcIndex < tgtIndex) grid.insertBefore(dragSrc, target.nextSibling);
+		else grid.insertBefore(dragSrc, target);
+		saveOrder();
+		target.classList.remove('drag-over');
+	}
+
+	function onDragEnd() {
+		qsa('.drag-over').forEach(el => el.classList.remove('drag-over'));
+		qsa('.dragging').forEach(el => el.classList.remove('dragging'));
+		dragSrc = null;
+	}
+
+	// wire up handles
+	qsa('.drag-handle').forEach(handle => {
+		handle.setAttribute('draggable', 'true');
+		handle.addEventListener('dragstart', onDragStart);
+		handle.addEventListener('dragend', onDragEnd);
+		handle.addEventListener('dragover', onDragOver);
+		handle.addEventListener('dragleave', onDragLeave);
+		handle.addEventListener('drop', onDrop);
+	});
 });
 

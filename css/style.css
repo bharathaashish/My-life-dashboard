@@ -275,3 +275,30 @@ button.calendar-cell { text-align: left; }
 
 .dark .task-delete:hover { background: rgba(255,255,255,0.03) !important; }
 
+/* Drag handle positioning and visuals (non-intrusive so headers keep alignment) */
+.section[data-widget], section[data-widget] { position: relative; }
+.drag-handle {
+    position: absolute;
+    top: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 36px;
+    height: 36px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255,255,255,0.02);
+    border: 1px solid rgba(255,255,255,0.03);
+    border-radius: 6px;
+    cursor: grab;
+    z-index: 10;
+}
+.drag-handle:hover { background: rgba(255,255,255,0.04); }
+.drag-handle:active { cursor: grabbing; transform: translateX(-50%) scale(0.98); }
+
+/* Drop target highlight */
+.drag-over {
+    outline: 2px dashed rgba(43,108,176,0.6);
+    transform: translateY(-2px);
+}
+
