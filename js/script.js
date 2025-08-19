@@ -4,6 +4,38 @@ document.addEventListener('DOMContentLoaded', () => {
 	const qs = (sel) => document.querySelector(sel);
 	const qsa = (sel) => Array.from(document.querySelectorAll(sel));
 
+	// ---------- THEME / DARK MODE ----------
+	const themeToggleBtn = qs('#theme-toggle');
+	const lightIcon = qs('#light-icon');
+	const darkIcon = qs('#dark-icon');
+
+	function applyTheme(theme) {
+		if (theme === 'dark') {
+			document.documentElement.classList.add('dark');
+			if (lightIcon) lightIcon.classList.remove('hidden');
+			if (darkIcon) darkIcon.classList.add('hidden');
+		} else {
+			document.documentElement.classList.remove('dark');
+			if (lightIcon) lightIcon.classList.add('hidden');
+			if (darkIcon) darkIcon.classList.remove('hidden');
+		}
+	}
+
+	// Initialize theme from localStorage or system preference
+	let storedTheme = localStorage.getItem('theme');
+	if (!storedTheme) {
+		storedTheme = (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
+	}
+	applyTheme(storedTheme);
+
+	if (themeToggleBtn) {
+		themeToggleBtn.addEventListener('click', () => {
+			const newTheme = document.documentElement.classList.contains('dark') ? 'light' : 'dark';
+			applyTheme(newTheme);
+			localStorage.setItem('theme', newTheme);
+		});
+	}
+
 	// ---------- TODO LIST ----------
 	const todoInput = qs('#todo-input');
 	const addTaskBtn = qs('#add-task');

@@ -194,3 +194,62 @@ button.calendar-cell { text-align: left; }
     border-radius: 4px;
 }
 .task-delete:hover { background: rgba(0,0,0,0.04); }
+
+/* Dark mode overrides: ensure no white surfaces */
+:root.dark, .dark {
+    --bg: #0b0e14;
+    --widget: #0f1419;
+    --muted: #99a0a6;
+    --border: #1f2730;
+    --text: #e6eef6;
+    --accent: #2b6cb0;
+}
+
+/* Apply dark tokens when .dark exists on html/documentElement */
+.dark body, .dark .widget, .dark section, .dark textarea, .dark input, .dark button {
+    background-color: var(--widget) !important;
+    color: var(--text) !important;
+    border-color: var(--border) !important;
+}
+
+.dark header {
+    background-color: #07090c !important;
+    color: var(--text) !important;
+}
+
+.dark #todo-list li {
+    background: transparent !important;
+}
+
+.dark #todo-input, .dark #event-input, .dark textarea, .dark input[type="number"] {
+    background-color: #0b0f13 !important;
+    color: var(--text) !important;
+    border: 1px solid var(--border) !important;
+}
+
+.dark .calendar-cell {
+    background: #0b1014 !important;
+    border-color: #172025 !important;
+}
+
+.dark .calendar-cell.has-event {
+    background: #112022 !important;
+}
+
+.dark .calendar-cell.selected {
+    outline-color: #2b6cb0 !important;
+}
+
+.dark #events-list li {
+    background: transparent !important;
+    border: 1px solid var(--border) !important;
+}
+
+.dark button, .dark .task-delete, .dark #add-task, .dark #add-event-btn {
+    background-color: transparent !important;
+    color: var(--text) !important;
+    border: 1px solid var(--border) !important;
+}
+
+.dark .task-delete:hover { background: rgba(255,255,255,0.03) !important; }
+
