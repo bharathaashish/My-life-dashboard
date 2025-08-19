@@ -1,0 +1,17 @@
+# Node modules
+node_modules/
+
+# Environment
+.env
+
+# VS Code
+.vscode/
+
+# macOS
+.DS_Store
+
+# Logs
+npm-debug.log*
+
+# Built CSS (optional - keep if you prefer to build locally)
+# css/style.css
