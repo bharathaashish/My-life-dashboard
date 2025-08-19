@@ -195,6 +195,21 @@ button.calendar-cell { text-align: left; }
 }
 .task-delete:hover { background: rgba(0,0,0,0.04); }
 
+/* Make the todo list scrollable inside its widget */
+#todo-list {
+    max-height: 140px; /* keep it compact inside the widget */
+    overflow-y: auto;
+    padding-right: 6px; /* room for scrollbar */
+}
+
+/* Subtle scrollbar styling */
+#todo-list::-webkit-scrollbar { width: 10px; }
+#todo-list::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.12); border-radius: 6px; }
+#todo-list::-webkit-scrollbar-track { background: transparent; }
+
+/* Dark-mode scrollbar tweak */
+.dark #todo-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.06); }
+
 /* Dark mode overrides: ensure no white surfaces */
 
 :root.dark, .dark {
