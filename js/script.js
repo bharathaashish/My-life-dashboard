@@ -125,8 +125,28 @@ document.addEventListener('DOMContentLoaded', () => {
 		if (timerDisplay) timerDisplay.textContent = formatTime(millisecondsLeft);
 	}
 
+	function updateWorkTotalDisplay() {
+		if (workTotalDisplay) {
+			const totalMinutes = Math.floor(totalWorkMilliseconds / (60 * 1000));
+			workTotalDisplay.textContent = `Total Work Time: ${totalMinutes} mins`;
+		}
+	}
+
+	let elapsedWorkTime = 0;
+
 	function tick() {
 		millisecondsLeft -= 10;
+		
+		if (isWork) {
+			elapsedWorkTime += 10;
+			if (elapsedWorkTime >= 60000) { // 1 minute passed
+				totalWorkMilliseconds += 60000;
+				localStorage.setItem('totalWorkMilliseconds', String(totalWorkMilliseconds));
+				updateWorkTotalDisplay();
+				elapsedWorkTime = 0; // Reset for next minute
+			}
+		}
+		
 		if (millisecondsLeft < 0) {
 			// Switch modes
 			isWork = !isWork;
@@ -153,6 +173,7 @@ document.addEventListener('DOMContentLoaded', () => {
 		stopTimer();
 		isWork = true;
 		millisecondsLeft = workMinutes * 60 * 1000;
+		elapsedWorkTime = 0;
 		updateTimerDisplay();
 	}
 
@@ -177,6 +198,7 @@ document.addEventListener('DOMContentLoaded', () => {
 	if (workInput) workInput.value = String(workMinutes);
 	if (breakInput) breakInput.value = String(breakMinutes);
 	updateTimerDisplay();
+	updateWorkTotalDisplay();
 
 	// ---------- NOTES ----------
 	const notesArea = qs('#notes-area');
