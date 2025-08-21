@@ -312,3 +312,78 @@ input, textarea, button {
     transform: translateY(-2px);
 }
 
+/* Expense Manager Widget */
+#expense-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.expense-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 8px 10px;
+    border-radius: 6px;
+    background: transparent;
+}
+
+.expense-delete {
+    background: transparent;
+    border: none;
+    color: #c0392b;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 4px 6px;
+    border-radius: 4px;
+}
+
+.expense-delete:hover {
+    background: rgba(0,0,0,0.04);
+}
+
+/* Make the expense list scrollable inside its widget */
+#expense-list {
+    max-height: 100px; /* reduced height to accommodate panels */
+    overflow-y: auto;
+    padding-right: 6px; /* room for scrollbar */
+}
+
+/* Subtle scrollbar styling */
+#expense-list::-webkit-scrollbar {
+    width: 10px;
+}
+
+#expense-list::-webkit-scrollbar-thumb {
+    background: rgba(0,0,0,0.12);
+    border-radius: 6px;
+}
+
+#expense-list::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+/* Dark-mode scrollbar tweak */
+.dark #expense-list::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.06);
+}
+
+.dark .expense-delete:hover {
+    background: rgba(255,255,255,0.03) !important;
+}
+
+/* Panel styling */
+#add-expense-panel, #set-budget-panel {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+}
+
+/* Responsive panels */
+@media (max-width: 768px) {
+    #add-expense-panel, #set-budget-panel {
+        margin-left: 1rem;
+        margin-right: 1rem;
+    }
+}
+

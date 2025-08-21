@@ -281,6 +281,212 @@ document.addEventListener('DOMContentLoaded', () => {
 
 	renderCalendar(); renderEvents();
 
+	// ---------- EXPENSE MANAGER ----------
+	const addExpenseBtn = qs('#add-expense-btn');
+	const setBudgetBtn = qs('#set-budget-btn');
+	const saveExpenseBtn = qs('#save-expense');
+	const cancelExpenseBtn = qs('#cancel-expense');
+	const saveBudgetBtn = qs('#save-budget');
+	const cancelBudgetBtn = qs('#cancel-budget');
+	const expenseList = qs('#expense-list');
+	const budgetAmountDisplay = qs('#budget-amount');
+	const spentAmountDisplay = qs('#spent-amount');
+	const remainingAmountDisplay = qs('#remaining-amount');
+	const addExpensePanel = qs('#add-expense-panel');
+	const setBudgetPanel = qs('#set-budget-panel');
+
+	// Expense form elements
+	const expenseAmountInput = qs('#expense-amount');
+	const expenseCategorySelect = qs('#expense-category');
+	const expenseDateInput = qs('#expense-date');
+	const expenseDescriptionInput = qs('#expense-description');
+	const budgetAmountInput = qs('#budget-amount-input');
+
+	// Initialize with today's date
+	if (expenseDateInput) {
+		const today = new Date();
+		expenseDateInput.value = today.toISOString().split('T')[0];
+	}
+
+	// Load data from localStorage
+	let expenses = JSON.parse(localStorage.getItem('expenses') || '[]');
+	let budget = JSON.parse(localStorage.getItem('expense-budget') || '{"amount": 0, "month": ""}');
+
+	// Set current month for budget if not set
+	const currentMonth = new Date().toISOString().slice(0, 7); // YYYY-MM
+	if (budget.month !== currentMonth) {
+		budget = { amount: budget.amount, month: currentMonth };
+		localStorage.setItem('expense-budget', JSON.stringify(budget));
+	}
+
+	// Save functions
+	const saveExpenses = () => localStorage.setItem('expenses', JSON.stringify(expenses));
+	const saveBudget = () => localStorage.setItem('expense-budget', JSON.stringify(budget));
+
+	// Format currency
+	function formatCurrency(amount) {
+		return '$' + amount.toFixed(2);
+	}
+
+	// Get current month's expenses
+	function getCurrentMonthExpenses() {
+		const now = new Date();
+		const currentMonth = now.toISOString().slice(0, 7); // YYYY-MM
+		return expenses.filter(expense => expense.date.startsWith(currentMonth));
+	}
+
+	// Calculate total expenses for current month
+	function calculateTotalExpenses() {
+		const currentMonthExpenses = getCurrentMonthExpenses();
+		return currentMonthExpenses.reduce((total, expense) => total + expense.amount, 0);
+	}
+
+	// Update budget display
+	function updateBudgetDisplay() {
+		const totalExpenses = calculateTotalExpenses();
+		const remaining = budget.amount - totalExpenses;
+
+		if (budgetAmountDisplay) budgetAmountDisplay.textContent = formatCurrency(budget.amount);
+		if (spentAmountDisplay) spentAmountDisplay.textContent = formatCurrency(totalExpenses);
+		if (remainingAmountDisplay) remainingAmountDisplay.textContent = formatCurrency(remaining);
+	}
+
+	// Render expenses
+	function renderExpenses() {
+		if (!expenseList) return;
+		expenseList.innerHTML = '';
+
+		const currentMonthExpenses = getCurrentMonthExpenses();
+		// Sort by date descending (newest first)
+		currentMonthExpenses.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+		currentMonthExpenses.forEach((expense, i) => {
+			const li = document.createElement('li');
+			li.className = 'expense-item p-2 rounded-lg dark:bg-dark-widget light:bg-light-widget flex justify-between items-center';
+
+			const date = new Date(expense.date);
+			const dateStr = date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+
+			li.innerHTML = `
+				<div class="flex items-center">
+					<div class="mr-3">
+						<div class="font-semibold">${formatCurrency(expense.amount)}</div>
+						<div class="text-xs dark:text-dark-text/60 light:text-light-text/60">${dateStr}</div>
+					</div>
+					<div>
+						<div class="font-medium">${expense.description || 'Untitled Expense'}</div>
+						<div class="text-xs dark:text-dark-text/60 light:text-light-text/60 capitalize">${expense.category}</div>
+					</div>
+				</div>
+				<button class="expense-delete text-red-500 hover:text-red-700" data-id="${expense.id}">
+					<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+						<path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+					</svg>
+				</button>
+			`;
+
+			expenseList.appendChild(li);
+		});
+
+		// Add event listeners to delete buttons
+		qsa('.expense-delete').forEach(btn => {
+			btn.addEventListener('click', () => {
+				const id = btn.getAttribute('data-id');
+				deleteExpense(id);
+			});
+		});
+	}
+
+	// Add expense
+	function addExpense() {
+		if (!expenseAmountInput || !expenseDateInput) return;
+
+		const amount = parseFloat(expenseAmountInput.value);
+		const category = expenseCategorySelect ? expenseCategorySelect.value : 'other';
+		const date = expenseDateInput.value;
+		const description = expenseDescriptionInput ? expenseDescriptionInput.value.trim() : '';
+
+		if (isNaN(amount) || amount <= 0 || !date) {
+			alert('Please enter a valid amount and date.');
+			return;
+		}
+
+		const expense = {
+			id: 'exp_' + Date.now(), // Unique ID
+			amount: amount,
+			category: category,
+			date: date,
+			description: description,
+			timestamp: Date.now()
+		};
+
+		expenses.push(expense);
+		saveExpenses();
+		renderExpenses();
+		updateBudgetDisplay();
+
+		// Reset form
+		expenseAmountInput.value = '';
+		if (expenseDescriptionInput) expenseDescriptionInput.value = '';
+		
+		// Hide panel
+		if (addExpensePanel) addExpensePanel.classList.add('hidden');
+	}
+
+	// Delete expense
+	function deleteExpense(id) {
+		expenses = expenses.filter(expense => expense.id !== id);
+		saveExpenses();
+		renderExpenses();
+		updateBudgetDisplay();
+	}
+
+	// Set budget
+	function setBudget() {
+		if (!budgetAmountInput) return;
+
+		const amount = parseFloat(budgetAmountInput.value);
+
+		if (isNaN(amount) || amount <= 0) {
+			alert('Please enter a valid budget amount.');
+			return;
+		}
+
+		budget.amount = amount;
+		budget.month = new Date().toISOString().slice(0, 7); // Update to current month
+		saveBudget();
+		updateBudgetDisplay();
+
+		// Hide panel
+		if (setBudgetPanel) setBudgetPanel.classList.add('hidden');
+	}
+
+	// Event listeners
+	if (addExpenseBtn) addExpenseBtn.addEventListener('click', () => {
+		if (addExpensePanel) addExpensePanel.classList.remove('hidden');
+		if (setBudgetPanel) setBudgetPanel.classList.add('hidden');
+	});
+
+	if (setBudgetBtn) setBudgetBtn.addEventListener('click', () => {
+		if (setBudgetPanel) setBudgetPanel.classList.remove('hidden');
+		if (addExpensePanel) addExpensePanel.classList.add('hidden');
+		if (budgetAmountInput) budgetAmountInput.value = budget.amount;
+	});
+
+	if (saveExpenseBtn) saveExpenseBtn.addEventListener('click', addExpense);
+	if (cancelExpenseBtn) cancelExpenseBtn.addEventListener('click', () => {
+		if (addExpensePanel) addExpensePanel.classList.add('hidden');
+	});
+
+	if (saveBudgetBtn) saveBudgetBtn.addEventListener('click', setBudget);
+	if (cancelBudgetBtn) cancelBudgetBtn.addEventListener('click', () => {
+		if (setBudgetPanel) setBudgetPanel.classList.add('hidden');
+	});
+
+	// Initialize display
+	updateBudgetDisplay();
+	renderExpenses();
+
 	// DRAG & DROP: reorder widgets without changing their inner alignment
 	const grid = qs('#dashboard-grid');
 	function saveOrder() {

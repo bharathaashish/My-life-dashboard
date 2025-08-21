@@ -138,7 +138,7 @@
                     <div id="cal-month-year" class="text-lg font-medium">August 2025</div>
                     <button id="cal-next" class="text-2xl dark:text-dark-text light:text-light-text hover:opacity-80 px-2 py-1 transition-all">›</button>
                 </div>
-
+ 
                 <div class="grid grid-cols-2 gap-4 flex-1 min-h-0">
                     <div class="flex flex-col min-h-0">
                         <div class="grid grid-cols-7 gap-1 text-xs mb-1">
@@ -163,6 +163,108 @@
                             <button id="add-event-btn" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-all">Add</button>
                         </div>
                     </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Expense Manager Widget -->
+        <section id="expense-widget" data-widget="expense-widget" class="dark:bg-dark-widget light:bg-light-widget dark:text-dark-text light:text-light-text rounded-xl shadow-lg flex flex-col h-[280px] transition-all hover:scale-[1.02]">
+            <button class="drag-handle" aria-label="Drag widget">☰</button>
+            <div class="p-4 border-b dark:border-dark-accent light:border-light-accent flex justify-between items-center">
+                <h2 class="text-xl font-semibold">Expense Manager</h2>
+                <div class="flex gap-2">
+                    <button id="set-budget-btn" class="dark:text-dark-text light:text-light-text hover:opacity-80 p-1.5 rounded-lg dark:hover:bg-dark-accent light:hover:bg-light-accent transition-all">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                    <button id="add-expense-btn" class="dark:text-dark-text light:text-light-text hover:opacity-80 p-1.5 rounded-lg dark:hover:bg-dark-accent light:hover:bg-light-accent transition-all">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <div class="flex-1 p-4 flex flex-col">
+                <!-- Add Expense Panel (initially hidden) -->
+                <div id="add-expense-panel" class="hidden dark:bg-dark-accent light:bg-light-accent p-3 rounded-lg mb-3">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <div>
+                            <label class="text-sm dark:text-dark-text/80 light:text-light-text/80 block mb-1">Amount ($)</label>
+                            <input type="number" id="expense-amount" step="0.01" min="0.01"
+                                class="w-full px-2 py-1 dark:bg-dark-widget light:bg-light-widget dark:border-dark-accent light:border-light-accent border rounded focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label class="text-sm dark:text-dark-text/80 light:text-light-text/80 block mb-1">Category</label>
+                            <select id="expense-category"
+                                class="w-full px-2 py-1 dark:bg-dark-widget light:bg-light-widget dark:border-dark-accent light:border-light-accent border rounded focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <option value="food">Food</option>
+                                <option value="entertainment">Entertainment</option>
+                                <option value="transportation">Transportation</option>
+                                <option value="utilities">Utilities</option>
+                                <option value="shopping">Shopping</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="text-sm dark:text-dark-text/80 light:text-light-text/80 block mb-1">Date</label>
+                            <input type="date" id="expense-date"
+                                class="w-full px-2 py-1 dark:bg-dark-widget light:bg-light-widget dark:border-dark-accent light:border-light-accent border rounded focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label class="text-sm dark:text-dark-text/80 light:text-light-text/80 block mb-1">Description</label>
+                            <input type="text" id="expense-description" placeholder="What was this for?"
+                                class="w-full px-2 py-1 dark:bg-dark-widget light:bg-light-widget dark:border-dark-accent light:border-light-accent border rounded focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                    </div>
+                    <div class="flex gap-2 mt-3">
+                        <button id="save-expense" class="flex-1 bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700 transition-all">
+                            Add Expense
+                        </button>
+                        <button id="cancel-expense" class="flex-1 bg-slate-600 text-white px-3 py-1 rounded text-sm hover:bg-slate-700 transition-all">
+                            Cancel
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Set Budget Panel (initially hidden) -->
+                <div id="set-budget-panel" class="hidden dark:bg-dark-accent light:bg-light-accent p-3 rounded-lg mb-3">
+                    <div class="grid grid-cols-1 gap-3">
+                        <div>
+                            <label class="text-sm dark:text-dark-text/80 light:text-light-text/80 block mb-1">Monthly Budget ($)</label>
+                            <input type="number" id="budget-amount-input" step="0.01" min="0.01"
+                                class="w-full px-2 py-1 dark:bg-dark-widget light:bg-light-widget dark:border-dark-accent light:border-light-accent border rounded focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                    </div>
+                    <div class="flex gap-2 mt-3">
+                        <button id="save-budget" class="flex-1 bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700 transition-all">
+                            Set Budget
+                        </button>
+                        <button id="cancel-budget" class="flex-1 bg-slate-600 text-white px-3 py-1 rounded text-sm hover:bg-slate-700 transition-all">
+                            Cancel
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Budget Summary -->
+                <div class="mb-3 p-2 rounded-lg dark:bg-dark-accent light:bg-light-accent">
+                    <div class="flex justify-between">
+                        <span>Budget:</span>
+                        <span id="budget-amount">$0.00</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span>Spent:</span>
+                        <span id="spent-amount">$0.00</span>
+                    </div>
+                    <div class="flex justify-between font-bold">
+                        <span>Remaining:</span>
+                        <span id="remaining-amount">$0.00</span>
+                    </div>
+                </div>
+                
+                <!-- Expense List -->
+                <div class="flex-1 overflow-y-auto mb-3">
+                    <ul id="expense-list" class="space-y-2"></ul>
                 </div>
             </div>
         </section>
