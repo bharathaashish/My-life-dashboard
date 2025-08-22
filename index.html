@@ -348,6 +348,27 @@
                 </div>
             </div>
         </section>
+
+        <!-- Word of the Day Widget -->
+        <section id="word-widget" data-widget="word-widget" class="dark:bg-dark-widget light:bg-light-widget dark:text-dark-text light:text-light-text rounded-xl shadow-lg flex flex-col h-[280px] transition-all hover:scale-[1.02]">
+            <button class="drag-handle" aria-label="Drag widget">☰</button>
+            <div class="p-4 border-b dark:border-dark-accent light:border-light-accent">
+                <h2 class="text-xl font-semibold">Word of the Day</h2>
+            </div>
+            <div class="flex-1 p-4 flex flex-col overflow-y-auto">
+                <div class="flex-1 flex flex-col items-center justify-center">
+                    <div id="word-content" class="text-center">
+                        <div id="word-loading" class="text-lg">Loading word...</div>
+                        <div id="word-display" class="hidden">
+                            <h3 id="word-word" class="text-2xl font-bold mb-2"></h3>
+                            <p id="word-pronunciation" class="text-lg italic mb-3"></p>
+                            <p id="word-definition" class="mb-4"></p>
+                            <p id="word-example" class="italic dark:text-dark-text/80 light:text-light-text/80"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
     </main>
 
     <script src="js/script.js"></script>
