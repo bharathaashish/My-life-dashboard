@@ -1,7 +1,11 @@
 // Main dashboard script: Todo list, Pomodoro timer, Notes, Calendar
 document.addEventListener('DOMContentLoaded', () => {
 	// ---------- Helpers ----------
-	const qs = (sel) => document.querySelector(sel);
+	const qs = (sel) => {
+		const element = document.querySelector(sel);
+		console.log(`Query selector "${sel}" result:`, element);
+		return element;
+	};
 	const qsa = (sel) => Array.from(document.querySelectorAll(sel));
 
 	// ---------- THEME / DARK MODE ----------
@@ -862,180 +866,134 @@ document.addEventListener('DOMContentLoaded', () => {
 
 	// ---------- WORD OF THE DAY ----------
 	const wordWidget = qs('#word-widget');
+	console.log('Word widget element:', wordWidget);
+	
 	const wordLoading = qs('#word-loading');
+	console.log('Word loading element:', wordLoading);
+	
 	const wordDisplay = qs('#word-display');
+	console.log('Word display element:', wordDisplay);
+	
 	const wordWord = qs('#word-word');
+	console.log('Word word element:', wordWord);
+	
 	const wordPronunciation = qs('#word-pronunciation');
+	console.log('Word pronunciation element:', wordPronunciation);
+	
 	const wordDefinition = qs('#word-definition');
+	console.log('Word definition element:', wordDefinition);
+	
 	const wordExample = qs('#word-example');
+	console.log('Word example element:', wordExample);
 	
 	// A collection of words with definitions
 	const wordCollection = [
 		{
 			word: "Ephemeral",
 			pronunciation: "ih-FEM-er-uhl",
-			ipa: "/ɪˈfɛmərəl/",
 			definition: "Lasting for a very short time; transitory",
 			example: "The ephemeral beauty of cherry blossoms reminds us to appreciate the present moment."
 		},
 		{
 			word: "Serendipity",
 			pronunciation: "ser-en-DIP-i-tee",
-			ipa: "/ˌsɛrənˈdɪpɪti/",
 			definition: "The occurrence of events by chance in a happy or beneficial way",
 			example: "Finding my favorite book at the flea market was a delightful serendipity."
 		},
 		{
 			word: "Ubiquitous",
 			pronunciation: "yoo-BIK-wi-tus",
-			ipa: "/juːˈbɪkwɪtəs/",
 			definition: "Present, appearing, or found everywhere",
 			example: "Mobile phones have become ubiquitous in modern society."
 		},
 		{
 			word: "Eloquent",
 			pronunciation: "EL-oh-kwent",
-			ipa: "/ˈɛləkwənt/",
 			definition: "Fluent or persuasive in speaking or writing",
 			example: "Her eloquent speech moved the entire audience to tears."
 		},
 		{
 			word: "Resilient",
 			pronunciation: "ri-ZIL-yent",
-			ipa: "/rɪˈzɪliənt/",
 			definition: "Able to withstand or recover quickly from difficult conditions",
 			example: "Children are often remarkably resilient in the face of adversity."
 		},
 		{
 			word: "Mellifluous",
 			pronunciation: "meh-LIF-loo-us",
-			ipa: "/məˈlɪfluəs/",
 			definition: "Sweet or musical; pleasant to hear",
 			example: "The singer's mellifluous voice captivated everyone in the concert hall."
 		},
 		{
 			word: "Pragmatic",
 			pronunciation: "prag-MAT-ik",
-			ipa: "/præɡˈmætɪk/",
 			definition: "Dealing with things sensibly and realistically",
 			example: "We need a pragmatic approach to solve this complex problem."
 		},
 		{
 			word: "Quintessential",
 			pronunciation: "kwin-ti-SEN-shul",
-			ipa: "/ˌkwɪntɪˈsɛnʃəl/",
 			definition: "Representing the most perfect or typical example of a quality or class",
 			example: "This dish is the quintessential representation of Italian cuisine."
 		},
 		{
 			word: "Ineffable",
 			pronunciation: "in-EF-uh-bul",
-			ipa: "/ɪnˈɛfəbəl/",
 			definition: "Too great or extreme to be expressed in words",
 			example: "The ineffable beauty of the sunset left us speechless."
 		},
 		{
 			word: "Surreptitious",
 			pronunciation: "sur-up-TISH-us",
-			ipa: "/ˌsɜːrəpˈtɪʃəs/",
 			definition: "Kept secret, especially because it would not be approved of",
 			example: "He took a surreptitious glance at his watch during the meeting."
 		}
 	];
 	
-	// Cache for storing fetched words to minimize API calls
-	let wordCache = JSON.parse(localStorage.getItem('wordCache')) || {};
+	console.log('Word collection initialized:', wordCollection);
 	
-	// Recently used words to avoid repetition
-	let recentlyUsedWords = JSON.parse(localStorage.getItem('recentlyUsedWords')) || [];
-	
-	// Maximum number of recently used words to track
-	const MAX_RECENTLY_USED = 20;
-	
-	// Function to save cache and recently used words to localStorage
-	function saveWordData() {
-		localStorage.setItem('wordCache', JSON.stringify(wordCache));
-		localStorage.setItem('recentlyUsedWords', JSON.stringify(recentlyUsedWords));
-	}
-	
-	// Function to add a word to recently used list
-	function addToRecentlyUsed(word) {
-		// Remove the word if it's already in the list
-		recentlyUsedWords = recentlyUsedWords.filter(w => w !== word);
-		// Add to the beginning of the list
-		recentlyUsedWords.unshift(word);
-		// Keep only the most recent words
-		if (recentlyUsedWords.length > MAX_RECENTLY_USED) {
-			recentlyUsedWords = recentlyUsedWords.slice(0, MAX_RECENTLY_USED);
-		}
-		saveWordData();
-	}
-	
-	// Function to get a random word that hasn't been used recently
-	function getUnrecentWord() {
-		// Get all words from cache and local collection
-		const allWords = [
-			...Object.keys(wordCache),
-			...wordCollection.map(w => w.word)
-		];
-		
-		// Filter out recently used words
-		const availableWords = allWords.filter(word => !recentlyUsedWords.includes(word));
-		
-		// If all words have been used recently, use the full list
-		const wordPool = availableWords.length > 0 ? availableWords : allWords;
-		
-		// Return a random word from the pool
-		if (wordPool.length > 0) {
-			const randomIndex = Math.floor(Math.random() * wordPool.length);
-			return wordPool[randomIndex];
-		}
-		
-		// Fallback to random from collection if something goes wrong
-		return wordCollection[Math.floor(Math.random() * wordCollection.length)].word;
-	}
-	
-	function getTodaysWord() {
-		// Get today's date as a string (YYYY-MM-DD)
-		const today = new Date().toISOString().split('T')[0];
-		
-		// Check if we have a word stored for today
-		const storedData = localStorage.getItem('wordOfTheDay');
-		if (storedData) {
-			const parsedData = JSON.parse(storedData);
-			if (parsedData.date === today && parsedData.word) {
-				return parsedData.word;
-			}
-		}
-		
-		// If no word for today, select a random word
+	// Function to get a random word from the collection
+	function getRandomWord() {
+		console.log('Getting random word from local collection');
 		const randomIndex = Math.floor(Math.random() * wordCollection.length);
 		const selectedWord = wordCollection[randomIndex];
-		
-		// Store the selected word with today's date
-		const wordData = {
-			date: today,
-			word: selectedWord
-		};
-		localStorage.setItem('wordOfTheDay', JSON.stringify(wordData));
-		
+		console.log('Selected local word:', selectedWord);
 		return selectedWord;
 	}
 	
-	// Function to get a random word (for reload)
-	function getRandomWord() {
-		const randomIndex = Math.floor(Math.random() * wordCollection.length);
-		return wordCollection[randomIndex];
-	}
-	
 	function displayWord(wordData) {
-		if (wordWord) wordWord.textContent = wordData.word;
-		if (wordPronunciation) {
-			// Display both pronunciation and IPA
-			wordPronunciation.innerHTML = `${wordData.pronunciation} <span class="ipa-symbol">${wordData.ipa || ''}</span>`;
+		console.log('Displaying word data:', wordData);
+		
+		if (wordWord) {
+			wordWord.textContent = wordData.word || '';
+			console.log('Set word:', wordData.word);
 		}
-		if (wordDefinition) wordDefinition.textContent = wordData.definition;
-		if (wordExample) wordExample.textContent = `"${wordData.example}"`;
+		
+		if (wordPronunciation) {
+			// Display only English pronunciation, no IPA
+			const pronunciationText = wordData.pronunciation || '';
+			
+			console.log('Pronunciation text:', pronunciationText);
+			
+			// Set pronunciation text without IPA
+			wordPronunciation.textContent = pronunciationText;
+			console.log('Set pronunciation only');
+		}
+		
+		if (wordDefinition) {
+			wordDefinition.textContent = wordData.definition || '';
+			console.log('Set definition:', wordData.definition);
+		}
+		
+		if (wordExample) {
+			if (wordData.example) {
+				wordExample.textContent = `"${wordData.example}"`;
+				console.log('Set example:', wordData.example);
+			} else {
+				wordExample.textContent = '';
+				console.log('Cleared example');
+			}
+		}
 		
 		// Add speak button
 		const speakButton = document.createElement('button');
@@ -1051,11 +1009,18 @@ document.addEventListener('DOMContentLoaded', () => {
 		// Add speak button to the word display
 		if (wordDisplay) {
 			wordDisplay.appendChild(speakButton);
+			console.log('Added speak button');
 		}
 		
 		// Hide loading and show word display
-		if (wordLoading) wordLoading.classList.add('hidden');
-		if (wordDisplay) wordDisplay.classList.remove('hidden');
+		if (wordLoading) {
+			wordLoading.classList.add('hidden');
+			console.log('Hidden loading');
+		}
+		if (wordDisplay) {
+			wordDisplay.classList.remove('hidden');
+			console.log('Shown word display');
+		}
 	}
 	
 	// Function to speak the word using Web Speech API
@@ -1072,16 +1037,19 @@ document.addEventListener('DOMContentLoaded', () => {
 		}
 	}
 	
-	// Initialize word of the day
+	// Initialize word widget with a random word from local collection
 	if (wordWidget) {
+		console.log('Initializing word widget');
 		try {
-			// Use a random word on each reload instead of always the same daily word
+			// Get and display a random word from local collection
 			const randomWord = getRandomWord();
 			displayWord(randomWord);
 		} catch (error) {
-			console.error('Error loading word of the day:', error);
+			console.error('Error loading word:', error);
 			if (wordLoading) wordLoading.textContent = 'Failed to load word';
 		}
+	} else {
+		console.log('Word widget not found');
 	}
 
 	// DRAG & DROP: reorder widgets without changing their inner alignment

@@ -552,17 +552,6 @@ input, textarea, button {
 	color: #9ca3af; /* gray-400 */
 }
 
-/* IPA Symbol styling */
-.ipa-symbol {
-	font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-	font-style: normal;
-	color: #6b7280; /* gray-500 */
-	margin-left: 8px;
-}
-
-.dark .ipa-symbol {
-	color: #9ca3af; /* gray-400 */
-}
 
 /* Speak button styling */
 #word-speak {
