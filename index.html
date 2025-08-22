@@ -268,6 +268,86 @@
                 </div>
             </div>
         </section>
+
+        <!-- Calculator Widget -->
+        <section id="calculator-widget" data-widget="calculator-widget" class="dark:bg-dark-widget light:bg-light-widget dark:text-dark-text light:text-light-text rounded-xl shadow-lg flex flex-col h-[280px] transition-all hover:scale-[1.02]">
+            <button class="drag-handle" aria-label="Drag widget">☰</button>
+            <div class="p-4 border-b dark:border-dark-accent light:border-light-accent">
+                <div class="flex justify-between items-center">
+                    <h2 class="text-xl font-semibold">Calculator</h2>
+                    <button id="calc-mode-toggle" class="dark:bg-dark-accent light:bg-light-accent px-3 py-1 rounded-lg text-sm hover:opacity-80 transition-all">Scientific</button>
+                </div>
+            </div>
+            <div class="flex-1 p-4 flex flex-col overflow-y-auto">
+                <!-- Display -->
+                <div class="mb-3">
+                    <div id="calc-history" class="text-right text-sm dark:text-dark-text/60 light:text-light-text/60 h-5 overflow-x-auto whitespace-nowrap"></div>
+                    <div id="calc-display" class="text-right text-2xl font-semibold dark:bg-dark-accent light:bg-light-accent p-3 rounded-lg h-12 overflow-x-auto whitespace-nowrap flex items-center justify-end">0</div>
+                </div>
+                
+                <!-- Calculator Buttons -->
+                <div id="calc-basic-buttons" class="grid grid-cols-4 gap-2">
+                    <!-- Row 1 -->
+                    <button class="calc-btn dark:bg-dark-accent light:bg-light-accent p-2 rounded-lg font-medium hover:opacity-80 transition-all" data-action="clear">C</button>
+                    <button class="calc-btn dark:bg-dark-accent light:bg-light-accent p-2 rounded-lg font-medium hover:opacity-80 transition-all" data-action="clearEntry">CE</button>
+                    <button class="calc-btn dark:bg-dark-accent light:bg-light-accent p-2 rounded-lg font-medium hover:opacity-80 transition-all" data-action="backspace">⌫</button>
+                    <button class="calc-btn dark:bg-dark-accent light:bg-light-accent p-2 rounded-lg font-medium hover:opacity-80 transition-all" data-action="divide">/</button>
+                    
+                    <!-- Row 2 -->
+                    <button class="calc-btn dark:bg-dark-accent light:bg-light-accent p-2 rounded-lg font-medium hover:opacity-80 transition-all" data-value="7">7</button>
+                    <button class="calc-btn dark:bg-dark-accent light:bg-light-accent p-2 rounded-lg font-medium hover:opacity-80 transition-all" data-value="8">8</button>
+                    <button class="calc-btn dark:bg-dark-accent light:bg-light-accent p-2 rounded-lg font-medium hover:opacity-80 transition-all" data-value="9">9</button>
+                    <button class="calc-btn dark:bg-dark-accent light:bg-light-accent p-2 rounded-lg font-medium hover:opacity-80 transition-all" data-action="multiply">*</button>
+                    
+                    <!-- Row 3 -->
+                    <button class="calc-btn dark:bg-dark-accent light:bg-light-accent p-2 rounded-lg font-medium hover:opacity-80 transition-all" data-value="4">4</button>
+                    <button class="calc-btn dark:bg-dark-accent light:bg-light-accent p-2 rounded-lg font-medium hover:opacity-80 transition-all" data-value="5">5</button>
+                    <button class="calc-btn dark:bg-dark-accent light:bg-light-accent p-2 rounded-lg font-medium hover:opacity-80 transition-all" data-value="6">6</button>
+                    <button class="calc-btn dark:bg-dark-accent light:bg-light-accent p-2 rounded-lg font-medium hover:opacity-80 transition-all" data-action="subtract">-</button>
+                    
+                    <!-- Row 4 -->
+                    <button class="calc-btn dark:bg-dark-accent light:bg-light-accent p-2 rounded-lg font-medium hover:opacity-80 transition-all" data-value="1">1</button>
+                    <button class="calc-btn dark:bg-dark-accent light:bg-light-accent p-2 rounded-lg font-medium hover:opacity-80 transition-all" data-value="2">2</button>
+                    <button class="calc-btn dark:bg-dark-accent light:bg-light-accent p-2 rounded-lg font-medium hover:opacity-80 transition-all" data-value="3">3</button>
+                    <button class="calc-btn dark:bg-dark-accent light:bg-light-accent p-2 rounded-lg font-medium hover:opacity-80 transition-all" data-action="add">+</button>
+                    
+                    <!-- Row 5 -->
+                    <button class="calc-btn dark:bg-dark-accent light:bg-light-accent p-2 rounded-lg font-medium hover:opacity-80 transition-all" data-action="plusMinus">±</button>
+                    <button class="calc-btn dark:bg-dark-accent light:bg-light-accent p-2 rounded-lg font-medium hover:opacity-80 transition-all" data-value="0">0</button>
+                    <button class="calc-btn dark:bg-dark-accent light:bg-light-accent p-2 rounded-lg font-medium hover:opacity-80 transition-all" data-value=".">.</button>
+                    <button class="calc-btn dark:bg-dark-accent light:bg-light-accent p-2 rounded-lg font-medium hover:opacity-80 transition-all" data-action="equals">=</button>
+                </div>
+                
+                <div id="calc-scientific-buttons" class="grid grid-cols-5 gap-2 mt-2 hidden">
+                    <!-- Row 1 -->
+                    <button class="calc-btn dark:bg-dark-accent light:bg-light-accent p-2 rounded-lg font-medium hover:opacity-80 transition-all" data-action="memoryClear">MC</button>
+                    <button class="calc-btn dark:bg-dark-accent light:bg-light-accent p-2 rounded-lg font-medium hover:opacity-80 transition-all" data-action="memoryRecall">MR</button>
+                    <button class="calc-btn dark:bg-dark-accent light:bg-light-accent p-2 rounded-lg font-medium hover:opacity-80 transition-all" data-action="memoryAdd">M+</button>
+                    <button class="calc-btn dark:bg-dark-accent light:bg-light-accent p-2 rounded-lg font-medium hover:opacity-80 transition-all" data-action="memorySubtract">M-</button>
+                    <button class="calc-btn dark:bg-dark-accent light:bg-light-accent p-2 rounded-lg font-medium hover:opacity-80 transition-all" data-action="memoryStore">MS</button>
+                    
+                    <!-- Row 2 -->
+                    <button class="calc-btn dark:bg-dark-accent light:bg-light-accent p-2 rounded-lg font-medium hover:opacity-80 transition-all" data-action="openParen">(</button>
+                    <button class="calc-btn dark:bg-dark-accent light:bg-light-accent p-2 rounded-lg font-medium hover:opacity-80 transition-all" data-action="closeParen">)</button>
+                    <button class="calc-btn dark:bg-dark-accent light:bg-light-accent p-2 rounded-lg font-medium hover:opacity-80 transition-all" data-action="pi">π</button>
+                    <button class="calc-btn dark:bg-dark-accent light:bg-light-accent p-2 rounded-lg font-medium hover:opacity-80 transition-all" data-action="power">^</button>
+                    <button class="calc-btn dark:bg-dark-accent light:bg-light-accent p-2 rounded-lg font-medium hover:opacity-80 transition-all" data-action="percentage">%</button>
+                    
+                    <!-- Row 3 -->
+                    <button class="calc-btn dark:bg-dark-accent light:bg-light-accent p-2 rounded-lg font-medium hover:opacity-80 transition-all" data-action="sin">sin</button>
+                    <button class="calc-btn dark:bg-dark-accent light:bg-light-accent p-2 rounded-lg font-medium hover:opacity-80 transition-all" data-action="cos">cos</button>
+                    <button class="calc-btn dark:bg-dark-accent light:bg-light-accent p-2 rounded-lg font-medium hover:opacity-80 transition-all" data-action="tan">tan</button>
+                    <button class="calc-btn dark:bg-dark-accent light:bg-light-accent p-2 rounded-lg font-medium hover:opacity-80 transition-all" data-action="reciprocal">1/x</button>
+                    <button class="calc-btn dark:bg-dark-accent light:bg-light-accent p-2 rounded-lg font-medium hover:opacity-80 transition-all" data-action="factorial">!</button>
+                    
+                    <!-- Row 4 -->
+                    <button class="calc-btn dark:bg-dark-accent light:bg-light-accent p-2 rounded-lg font-medium hover:opacity-80 transition-all" data-action="log">log</button>
+                    <button class="calc-btn dark:bg-dark-accent light:bg-light-accent p-2 rounded-lg font-medium hover:opacity-80 transition-all" data-action="ln">ln</button>
+                    <button class="calc-btn dark:bg-dark-accent light:bg-light-accent p-2 rounded-lg font-medium hover:opacity-80 transition-all" data-action="sqrt">√</button>
+                    <button class="calc-btn dark:bg-dark-accent light:bg-light-accent p-2 rounded-lg font-medium hover:opacity-80 transition-all col-span-2" data-action="equals">=</button>
+                </div>
+            </div>
+        </section>
     </main>
 
     <script src="js/script.js"></script>

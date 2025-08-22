@@ -487,6 +487,379 @@ document.addEventListener('DOMContentLoaded', () => {
 	updateBudgetDisplay();
 	renderExpenses();
 
+	// ---------- CALCULATOR ----------
+	const calcDisplay = qs('#calc-display');
+	const calcHistory = qs('#calc-history');
+	const calcButtons = qsa('.calc-btn');
+	const calcModeToggle = qs('#calc-mode-toggle');
+	const calcBasicButtons = qs('#calc-basic-buttons');
+	const calcScientificButtons = qs('#calc-scientific-buttons');
+	
+	let currentInput = '0';
+	let previousInput = '';
+	let operation = null;
+	let shouldResetDisplay = false;
+	let memory = 0;
+	let history = '';
+	let isScientificMode = false;
+	
+	// Load memory from localStorage
+	memory = parseFloat(localStorage.getItem('calculator-memory')) || 0;
+	isScientificMode = localStorage.getItem('calculator-mode') === 'scientific';
+	
+	// Initialize mode
+	if (isScientificMode) {
+		if (calcScientificButtons) calcScientificButtons.classList.remove('hidden');
+		if (calcModeToggle) calcModeToggle.textContent = 'Basic';
+	} else {
+		if (calcScientificButtons) calcScientificButtons.classList.add('hidden');
+		if (calcModeToggle) calcModeToggle.textContent = 'Scientific';
+	}
+	
+	function updateDisplay() {
+		if (calcDisplay) calcDisplay.textContent = currentInput;
+		if (calcHistory) calcHistory.textContent = history;
+	}
+	
+	function clearAll() {
+		currentInput = '0';
+		previousInput = '';
+		operation = null;
+		history = '';
+		shouldResetDisplay = false;
+		updateDisplay();
+	}
+	
+	function clearEntry() {
+		currentInput = '0';
+		shouldResetDisplay = false;
+		updateDisplay();
+	}
+	
+	function backspace() {
+		if (currentInput.length === 1 || (currentInput.length === 2 && currentInput.startsWith('-'))) {
+			currentInput = '0';
+		} else {
+			currentInput = currentInput.slice(0, -1);
+		}
+		updateDisplay();
+	}
+	
+	function appendNumber(number) {
+		if (shouldResetDisplay) {
+			currentInput = '0';
+			shouldResetDisplay = false;
+		}
+		if (number === '.' && currentInput.includes('.')) return;
+		if (currentInput === '0' && number !== '.') {
+			currentInput = number;
+		} else {
+			currentInput += number;
+		}
+		updateDisplay();
+	}
+	
+	function chooseOperation(op) {
+		if (currentInput === '') return;
+		if (previousInput !== '') {
+			calculate();
+		}
+		operation = op;
+		previousInput = currentInput;
+		shouldResetDisplay = true;
+		history = `${previousInput} ${op}`;
+		updateDisplay();
+	}
+	
+	function calculate() {
+		let computation;
+		const prev = parseFloat(previousInput);
+		const current = parseFloat(currentInput);
+		if (isNaN(prev) || isNaN(current)) return;
+		
+		switch (operation) {
+			case '+':
+				computation = prev + current;
+				break;
+			case '-':
+				computation = prev - current;
+				break;
+			case '*':
+				computation = prev * current;
+				break;
+			case '/':
+				computation = prev / current;
+				break;
+			case '^':
+				computation = Math.pow(prev, current);
+				break;
+			default:
+				return;
+		}
+		
+		history = `${previousInput} ${operation} ${currentInput} =`;
+		currentInput = computation.toString();
+		operation = null;
+		previousInput = '';
+		shouldResetDisplay = true;
+		updateDisplay();
+	}
+	
+	function calculateScientific(func) {
+		const current = parseFloat(currentInput);
+		if (isNaN(current)) return;
+		
+		let result;
+		switch (func) {
+			case 'sin':
+				result = Math.sin(current * Math.PI / 180); // Convert to radians
+				history = `sin(${current}) =`;
+				break;
+			case 'cos':
+				result = Math.cos(current * Math.PI / 180); // Convert to radians
+				history = `cos(${current}) =`;
+				break;
+			case 'tan':
+				result = Math.tan(current * Math.PI / 180); // Convert to radians
+				history = `tan(${current}) =`;
+				break;
+			case 'log':
+				if (current <= 0) {
+					currentInput = 'Error';
+					updateDisplay();
+					return;
+				}
+				result = Math.log10(current);
+				history = `log(${current}) =`;
+				break;
+			case 'ln':
+				if (current <= 0) {
+					currentInput = 'Error';
+					updateDisplay();
+					return;
+				}
+				result = Math.log(current);
+				history = `ln(${current}) =`;
+				break;
+			case 'sqrt':
+				if (current < 0) {
+					currentInput = 'Error';
+					updateDisplay();
+					return;
+				}
+				result = Math.sqrt(current);
+				history = `√(${current}) =`;
+				break;
+			case 'factorial':
+				if (current < 0 || !Number.isInteger(current)) {
+					currentInput = 'Error';
+					updateDisplay();
+					return;
+				}
+				result = factorial(current);
+				history = `fact(${current}) =`;
+				break;
+			case 'pi':
+				result = Math.PI;
+				history = `π =`;
+				break;
+			case 'reciprocal':
+				if (current === 0) {
+					currentInput = 'Error';
+					updateDisplay();
+					return;
+				}
+				result = 1 / current;
+				history = `1/(${current}) =`;
+				break;
+			case 'percentage':
+				result = current / 100;
+				history = `${current}% =`;
+				break;
+			case 'plusMinus':
+				result = current * -1;
+				history = `(-${current}) =`;
+				break;
+			default:
+				return;
+		}
+		
+		currentInput = result.toString();
+		shouldResetDisplay = true;
+		updateDisplay();
+	}
+	
+	function factorial(n) {
+		if (n === 0 || n === 1) return 1;
+		let result = 1;
+		for (let i = 2; i <= n; i++) {
+			result *= i;
+		}
+		return result;
+	}
+	
+	// Memory functions
+	function memoryClear() {
+		memory = 0;
+		localStorage.setItem('calculator-memory', memory.toString());
+	}
+	
+	function memoryRecall() {
+		currentInput = memory.toString();
+		shouldResetDisplay = false;
+		updateDisplay();
+	}
+	
+	function memoryAdd() {
+		const current = parseFloat(currentInput);
+		if (!isNaN(current)) {
+			memory += current;
+			localStorage.setItem('calculator-memory', memory.toString());
+		}
+	}
+	
+	function memorySubtract() {
+		const current = parseFloat(currentInput);
+		if (!isNaN(current)) {
+			memory -= current;
+			localStorage.setItem('calculator-memory', memory.toString());
+		}
+	}
+	
+	function memoryStore() {
+		const current = parseFloat(currentInput);
+		if (!isNaN(current)) {
+			memory = current;
+			localStorage.setItem('calculator-memory', memory.toString());
+		}
+	}
+	
+	// Toggle calculator mode
+	function toggleCalculatorMode() {
+		isScientificMode = !isScientificMode;
+		localStorage.setItem('calculator-mode', isScientificMode ? 'scientific' : 'basic');
+		
+		if (isScientificMode) {
+			if (calcScientificButtons) calcScientificButtons.classList.remove('hidden');
+			if (calcModeToggle) calcModeToggle.textContent = 'Basic';
+		} else {
+			if (calcScientificButtons) calcScientificButtons.classList.add('hidden');
+			if (calcModeToggle) calcModeToggle.textContent = 'Scientific';
+		}
+	}
+	
+	// Keyboard support
+	function handleKeyboardInput(e) {
+		// Prevent default behavior for keys we're handling
+		if (['0','1','2','3','4','5','6','7','8','9','+','-','*','/','.','Enter','Escape','Backspace','%'].includes(e.key)) {
+			e.preventDefault();
+		}
+		
+		// Handle number keys
+		if (/[0-9]/.test(e.key)) {
+			appendNumber(e.key);
+		}
+		// Handle operator keys
+		else if (e.key === '+') {
+			chooseOperation('+');
+		} else if (e.key === '-') {
+			chooseOperation('-');
+		} else if (e.key === '*') {
+			chooseOperation('*');
+		} else if (e.key === '/') {
+			chooseOperation('/');
+		} else if (e.key === '.') {
+			appendNumber('.');
+		} else if (e.key === 'Enter' || e.key === '=') {
+			calculate();
+		} else if (e.key === 'Escape') {
+			clearAll();
+		} else if (e.key === 'Backspace') {
+			backspace();
+		} else if (e.key === '%') {
+			calculateScientific('percentage');
+		}
+	}
+	
+	// Add event listeners to calculator buttons
+	calcButtons.forEach(button => {
+		button.addEventListener('click', () => {
+			const action = button.getAttribute('data-action');
+			const value = button.getAttribute('data-value');
+			
+			if (value !== null) {
+				appendNumber(value);
+			} else if (action !== null) {
+				switch (action) {
+					case 'clear':
+						clearAll();
+						break;
+					case 'clearEntry':
+						clearEntry();
+						break;
+					case 'backspace':
+						backspace();
+						break;
+					case 'add':
+					case 'subtract':
+					case 'multiply':
+					case 'divide':
+					case 'power':
+						chooseOperation(action === 'multiply' ? '*' : action === 'divide' ? '/' : action === 'power' ? '^' : action);
+						break;
+					case 'equals':
+						calculate();
+						break;
+					case 'sin':
+					case 'cos':
+					case 'tan':
+					case 'log':
+					case 'ln':
+					case 'sqrt':
+					case 'factorial':
+					case 'pi':
+					case 'reciprocal':
+					case 'percentage':
+					case 'plusMinus':
+						calculateScientific(action);
+						break;
+					case 'memoryClear':
+						memoryClear();
+						break;
+					case 'memoryRecall':
+						memoryRecall();
+						break;
+					case 'memoryAdd':
+						memoryAdd();
+						break;
+					case 'memorySubtract':
+						memorySubtract();
+						break;
+					case 'memoryStore':
+						memoryStore();
+						break;
+					case 'openParen':
+						appendNumber('(');
+						break;
+					case 'closeParen':
+						appendNumber(')');
+						break;
+				}
+			}
+		});
+	});
+	
+	// Add event listener for mode toggle
+	if (calcModeToggle) {
+		calcModeToggle.addEventListener('click', toggleCalculatorMode);
+	}
+	
+	// Add keyboard event listener
+	document.addEventListener('keydown', handleKeyboardInput);
+
+	// Initialize display
+	updateDisplay();
+
 	// DRAG & DROP: reorder widgets without changing their inner alignment
 	const grid = qs('#dashboard-grid');
 	function saveOrder() {

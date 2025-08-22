@@ -387,3 +387,117 @@ input, textarea, button {
     }
 }
 
+/* Calculator Widget */
+#calc-display {
+    font-family: 'Courier New', monospace;
+    min-height: 3rem;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    word-wrap: break-word;
+    word-break: break-all;
+}
+
+#calc-history {
+    min-height: 1.25rem;
+    font-family: 'Courier New', monospace;
+}
+
+.calc-btn {
+    font-size: 0.875rem;
+    transition: all 0.2s ease;
+}
+
+.calc-btn:hover {
+    transform: translateY(-2px);
+}
+
+.calc-btn:active {
+    transform: translateY(0);
+}
+
+/* Special buttons */
+.calc-btn[data-action="equals"] {
+    background-color: #3b82f6 !important; /* blue-500 */
+    color: white !important;
+}
+
+.dark .calc-btn[data-action="equals"] {
+    background-color: #3b82f6 !important; /* blue-500 */
+    color: white !important;
+}
+
+/* Function buttons */
+.calc-btn[data-action="sin"],
+.calc-btn[data-action="cos"],
+.calc-btn[data-action="tan"],
+.calc-btn[data-action="log"],
+.calc-btn[data-action="ln"],
+.calc-btn[data-action="sqrt"],
+.calc-btn[data-action="factorial"],
+.calc-btn[data-action="pi"],
+.calc-btn[data-action="power"] {
+    background-color: #10b981 !important; /* emerald-500 */
+    color: white !important;
+}
+
+.dark .calc-btn[data-action="sin"],
+.dark .calc-btn[data-action="cos"],
+.dark .calc-btn[data-action="tan"],
+.dark .calc-btn[data-action="log"],
+.dark .calc-btn[data-action="ln"],
+.dark .calc-btn[data-action="sqrt"],
+.dark .calc-btn[data-action="factorial"],
+.dark .calc-btn[data-action="pi"],
+.dark .calc-btn[data-action="power"] {
+    background-color: #10b981 !important; /* emerald-500 */
+    color: white !important;
+}
+
+/* Memory buttons */
+.calc-btn[data-action="memoryClear"],
+.calc-btn[data-action="memoryRecall"],
+.calc-btn[data-action="memoryAdd"],
+.calc-btn[data-action="memorySubtract"],
+.calc-btn[data-action="memoryStore"] {
+    background-color: #8b5cf6 !important; /* violet-500 */
+    color: white !important;
+}
+
+.dark .calc-btn[data-action="memoryClear"],
+.dark .calc-btn[data-action="memoryRecall"],
+.dark .calc-btn[data-action="memoryAdd"],
+.dark .calc-btn[data-action="memorySubtract"],
+.dark .calc-btn[data-action="memoryStore"] {
+    background-color: #8b5cf6 !important; /* violet-500 */
+    color: white !important;
+}
+
+/* Clear buttons */
+.calc-btn[data-action="clear"],
+.calc-btn[data-action="clearEntry"],
+.calc-btn[data-action="backspace"] {
+    background-color: #ef4444 !important; /* red-500 */
+    color: white !important;
+}
+
+.dark .calc-btn[data-action="clear"],
+.dark .calc-btn[data-action="clearEntry"],
+.dark .calc-btn[data-action="backspace"] {
+    background-color: #ef4444 !important; /* red-500 */
+    color: white !important;
+}
+
+/* Mode toggle button */
+#calc-mode-toggle {
+    font-size: 0.875rem;
+    transition: all 0.2s ease;
+}
+
+#calc-mode-toggle:hover {
+    transform: translateY(-2px);
+}
+
+#calc-mode-toggle:active {
+    transform: translateY(0);
+}
