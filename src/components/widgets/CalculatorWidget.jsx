@@ -187,23 +187,29 @@ const CalculatorWidget = () => {
   // Memory functions
   const memoryClear = () => {
     setMemory(0);
+    setHistory('Memory cleared');
   };
 
   const memoryRecall = () => {
     setCurrentInput(memory.toString());
+    setHistory(`Memory recalled: ${memory}`);
   };
 
   const memoryAdd = () => {
     const current = parseFloat(currentInput);
     if (!isNaN(current)) {
-      setMemory(memory + current);
+      const newMemory = memory + current;
+      setMemory(newMemory);
+      setHistory(`Memory: ${memory} + ${current} = ${newMemory}`);
     }
   };
 
   const memorySubtract = () => {
     const current = parseFloat(currentInput);
     if (!isNaN(current)) {
-      setMemory(memory - current);
+      const newMemory = memory - current;
+      setMemory(newMemory);
+      setHistory(`Memory: ${memory} - ${current} = ${newMemory}`);
     }
   };
 
@@ -211,6 +217,7 @@ const CalculatorWidget = () => {
     const current = parseFloat(currentInput);
     if (!isNaN(current)) {
       setMemory(current);
+      setHistory(`Stored ${current} in memory`);
     }
   };
 
@@ -271,19 +278,27 @@ const CalculatorWidget = () => {
     <section
       id="calculator-widget"
       data-widget="calculator-widget"
-      className="dark:bg-dark-widget light:bg-light-widget dark:text-dark-text light:text-light-text rounded-2xl shadow-widget dark:shadow-widget-dark flex flex-col h-[280px] transition-all duration-300 hover:shadow-xl"
+      className="dark:bg-dark-widget light:bg-light-widget dark:text-dark-text light:text-light-text rounded-2xl shadow-widget dark:shadow-widget-dark flex flex-col h-[320px] transition-all duration-300 hover:shadow-xl"
     >
       <button className="drag-handle" aria-label="Drag widget">☰</button>
       <div className="p-2 border-b dark:border-dark-accent light:border-light-accent">
         <div className="flex justify-between items-center">
           <h2 className="text-xl font-semibold">Calculator</h2>
-          <button
-            id="calc-mode-toggle"
-            onClick={toggleCalculatorMode}
-            className="dark:bg-dark-accent light:bg-light-accent px-4 py-2 rounded-xl text-sm hover:opacity-90 transition-all duration-300 shadow-md hover:shadow-lg"
-          >
-            {isScientificMode ? 'Basic' : 'Scientific'}
-          </button>
+          <div className="flex gap-2">
+            {/* Memory indicator */}
+            {memory !== 0 && (
+              <div className="text-xs dark:text-blue-400 light:text-blue-600 font-semibold bg-blue-100 dark:bg-blue-900/30 px-2 py-1 rounded-md">
+                M: {memory.toFixed(2)}
+              </div>
+            )}
+            <button
+              id="calc-mode-toggle"
+              onClick={toggleCalculatorMode}
+              className="dark:bg-dark-accent light:bg-light-accent px-4 py-2 rounded-xl text-sm hover:opacity-90 transition-all duration-300 shadow-md hover:shadow-lg"
+            >
+              {isScientificMode ? 'Basic' : 'Scientific'}
+            </button>
+          </div>
         </div>
       </div>
       <div className="flex-1 p-4 flex flex-col overflow-y-auto">
@@ -298,6 +313,50 @@ const CalculatorWidget = () => {
           >
             {currentInput}
           </div>
+        </div>
+
+        {/* Memory Functions Row - Always visible */}
+        <div className="grid grid-cols-5 gap-1 mb-2">
+          <button
+            className="calc-btn dark:bg-blue-600 light:bg-blue-500 text-white p-2 rounded-lg text-sm font-medium hover:opacity-90 transition-all duration-300 shadow-md hover:shadow-lg"
+            onClick={memoryClear}
+            data-action="memoryClear"
+            title="Memory Clear"
+          >
+            MC
+          </button>
+          <button
+            className="calc-btn dark:bg-blue-600 light:bg-blue-500 text-white p-2 rounded-lg text-sm font-medium hover:opacity-90 transition-all duration-300 shadow-md hover:shadow-lg"
+            onClick={memoryRecall}
+            data-action="memoryRecall"
+            title="Memory Recall"
+          >
+            MR
+          </button>
+          <button
+            className="calc-btn dark:bg-blue-600 light:bg-blue-500 text-white p-2 rounded-lg text-sm font-medium hover:opacity-90 transition-all duration-300 shadow-md hover:shadow-lg"
+            onClick={memoryAdd}
+            data-action="memoryAdd"
+            title="Memory Add"
+          >
+            M+
+          </button>
+          <button
+            className="calc-btn dark:bg-blue-600 light:bg-blue-500 text-white p-2 rounded-lg text-sm font-medium hover:opacity-90 transition-all duration-300 shadow-md hover:shadow-lg"
+            onClick={memorySubtract}
+            data-action="memorySubtract"
+            title="Memory Subtract"
+          >
+            M-
+          </button>
+          <button
+            className="calc-btn dark:bg-blue-600 light:bg-blue-500 text-white p-2 rounded-lg text-sm font-medium hover:opacity-90 transition-all duration-300 shadow-md hover:shadow-lg"
+            onClick={memoryStore}
+            data-action="memoryStore"
+            title="Memory Store"
+          >
+            MS
+          </button>
         </div>
         
         {/* Calculator Buttons */}
@@ -455,44 +514,7 @@ const CalculatorWidget = () => {
         
         {isScientificMode && (
           <div id="calc-scientific-buttons" className="grid grid-cols-5 gap-2 mt-2">
-            {/* Row 1 */}
-            <button
-              className="calc-btn dark:bg-dark-accent light:bg-light-accent p-3 rounded-xl font-medium hover:opacity-90 transition-all duration-300 shadow-md hover:shadow-lg"
-              onClick={memoryClear}
-              data-action="memoryClear"
-            >
-              MC
-            </button>
-            <button
-              className="calc-btn dark:bg-dark-accent light:bg-light-accent p-3 rounded-xl font-medium hover:opacity-90 transition-all duration-300 shadow-md hover:shadow-lg"
-              onClick={memoryRecall}
-              data-action="memoryRecall"
-            >
-              MR
-            </button>
-            <button
-              className="calc-btn dark:bg-dark-accent light:bg-light-accent p-3 rounded-xl font-medium hover:opacity-90 transition-all duration-300 shadow-md hover:shadow-lg"
-              onClick={memoryAdd}
-              data-action="memoryAdd"
-            >
-              M+
-            </button>
-            <button
-              className="calc-btn dark:bg-dark-accent light:bg-light-accent p-3 rounded-xl font-medium hover:opacity-90 transition-all duration-300 shadow-md hover:shadow-lg"
-              onClick={memorySubtract}
-              data-action="memorySubtract"
-            >
-              M-
-            </button>
-            <button
-              className="calc-btn dark:bg-dark-accent light:bg-light-accent p-3 rounded-xl font-medium hover:opacity-90 transition-all duration-300 shadow-md hover:shadow-lg"
-              onClick={memoryStore}
-              data-action="memoryStore"
-            >
-              MS
-            </button>
-            
-            {/* Row 2 */}
+            {/* Row 1 - Parentheses and advanced functions */}
             <button
               className="calc-btn dark:bg-dark-accent light:bg-light-accent p-3 rounded-xl font-medium hover:opacity-90 transition-all duration-300 shadow-md hover:shadow-lg"
               onClick={() => appendNumber('(')}
@@ -529,7 +551,7 @@ const CalculatorWidget = () => {
               %
             </button>
             
-            {/* Row 3 */}
+            {/* Row 2 - Trigonometric functions */}
             <button
               className="calc-btn dark:bg-dark-accent light:bg-light-accent p-3 rounded-xl font-medium hover:opacity-90 transition-all duration-300 shadow-md hover:shadow-lg"
               onClick={() => calculateScientific('sin')}
@@ -566,7 +588,7 @@ const CalculatorWidget = () => {
               !
             </button>
             
-            {/* Row 4 */}
+            {/* Row 3 - Logarithmic and root functions */}
             <button
               className="calc-btn dark:bg-dark-accent light:bg-light-accent p-3 rounded-xl font-medium hover:opacity-90 transition-all duration-300 shadow-md hover:shadow-lg"
               onClick={() => calculateScientific('log')}

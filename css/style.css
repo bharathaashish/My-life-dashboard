@@ -214,7 +214,7 @@ button.calendar-cell { text-align: left; }
 
 :root.dark, .dark {
     /* page background will be a dark blue; widgets remain darker for contrast */
-    --bg: #071a2f; /* dark blue behind widgets */
+    --bg: #000000; /* dark blue behind widgets */
     --widget: #0b1014; /* widget surface color */
     --muted: #99a0a6;
     --border: #172025;

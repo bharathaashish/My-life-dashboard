@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { WorkTimeTracker } from '../../utils/workTimeTracker';
 
 const PomodoroWidget = () => {
   const [workMinutes, setWorkMinutes] = useState(() => {
@@ -18,9 +19,33 @@ const PomodoroWidget = () => {
   const [showSettings, setShowSettings] = useState(false);
   const [workInput, setWorkInput] = useState(workMinutes);
   const [breakInput, setBreakInput] = useState(breakMinutes);
+  const [todayWorkTime, setTodayWorkTime] = useState(0);
   
   const timerRef = useRef(null);
   const elapsedWorkTimeRef = useRef(0);
+
+  // Load today's work time and listen for updates
+  useEffect(() => {
+    const updateTodayWorkTime = () => {
+      const today = WorkTimeTracker.getTodayDateString();
+      const workTime = WorkTimeTracker.getWorkTimeForDate(today);
+      setTodayWorkTime(workTime);
+    };
+
+    // Initial load
+    updateTodayWorkTime();
+
+    // Listen for work time updates
+    const handleWorkTimeUpdate = () => {
+      updateTodayWorkTime();
+    };
+
+    window.addEventListener('workTimeUpdated', handleWorkTimeUpdate);
+    
+    return () => {
+      window.removeEventListener('workTimeUpdated', handleWorkTimeUpdate);
+    };
+  }, []);
 
   // Update millisecondsLeft when workMinutes changes
   useEffect(() => {
@@ -58,6 +83,11 @@ const PomodoroWidget = () => {
           
           if (isWork) {
             elapsedWorkTimeRef.current += 10;
+            
+            // Track daily work time every 10ms
+            const today = WorkTimeTracker.getTodayDateString();
+            WorkTimeTracker.addWorkTime(today, 10);
+            
             if (elapsedWorkTimeRef.current >= 60000) { // 1 minute passed
               setTotalWorkMilliseconds(prevTotal => prevTotal + 60000);
               elapsedWorkTimeRef.current = 0; // Reset for next minute
@@ -221,9 +251,10 @@ const PomodoroWidget = () => {
           </div>
         </div>
         <div className="dark:bg-dark-accent light:bg-light-accent -mx-4 -mb-4 p-3 border-t dark:border-dark-accent light:border-light-accent rounded-b-2xl">
-          <p id="work-total" className="text-center text-sm dark:text-dark-text/80 light:text-light-text/80">
-            Total Work Time: {totalWorkMinutes} mins
-          </p>
+          <div className="text-center text-sm dark:text-dark-text/80 light:text-light-text/80 space-y-1">
+            <p>Today: {WorkTimeTracker.formatTime(todayWorkTime)}</p>
+            <p className="text-xs">Session Total: {totalWorkMinutes} mins</p>
+          </div>
         </div>
       </div>
     </section>
