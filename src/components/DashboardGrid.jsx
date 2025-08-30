@@ -7,7 +7,7 @@ import ExpenseWidget from './widgets/ExpenseWidget';
 import CalculatorWidget from './widgets/CalculatorWidget';
 import WordWidget from './widgets/WordWidget';
 
-const DashboardGrid = () => {
+const DashboardGrid = ({ onWidgetOrderChange, widgetOrder: externalWidgetOrder, hiddenWidgets: externalHiddenWidgets }) => {
   const [widgetOrder, setWidgetOrder] = useState([
     'todo-widget',
     'pomodoro-widget',
@@ -17,6 +17,7 @@ const DashboardGrid = () => {
     'calculator-widget',
     'word-widget'
   ]);
+  const [hiddenWidgets, setHiddenWidgets] = useState([]);
 
   useEffect(() => {
     // Load widget order from localStorage
@@ -28,18 +29,68 @@ const DashboardGrid = () => {
         console.error('Failed to parse widget order', e);
       }
     }
+
+    // Load hidden widgets from localStorage
+    const savedHiddenWidgets = localStorage.getItem('hidden-widgets');
+    if (savedHiddenWidgets) {
+      try {
+        setHiddenWidgets(JSON.parse(savedHiddenWidgets));
+      } catch (e) {
+        console.error('Failed to parse hidden widgets', e);
+      }
+    }
   }, []);
+
+  // Update local state when external props change
+  useEffect(() => {
+    if (externalWidgetOrder) {
+      setWidgetOrder(externalWidgetOrder);
+    }
+  }, [externalWidgetOrder]);
+
+  useEffect(() => {
+    if (externalHiddenWidgets) {
+      setHiddenWidgets(externalHiddenWidgets);
+    }
+  }, [externalHiddenWidgets]);
 
   const saveWidgetOrder = (newOrder) => {
     setWidgetOrder(newOrder);
     localStorage.setItem('widget-order', JSON.stringify(newOrder));
+    if (onWidgetOrderChange) {
+      onWidgetOrderChange(newOrder, hiddenWidgets);
+    }
+  };
+
+  const updateHiddenWidgets = (newHiddenWidgets) => {
+    setHiddenWidgets(newHiddenWidgets);
+    localStorage.setItem('hidden-widgets', JSON.stringify(newHiddenWidgets));
+    if (onWidgetOrderChange) {
+      onWidgetOrderChange(widgetOrder, newHiddenWidgets);
+    }
   };
 
   const moveWidget = (fromIndex, toIndex) => {
-    const newOrder = [...widgetOrder];
+    const visibleWidgets = widgetOrder.filter(id => !hiddenWidgets.includes(id));
+    const newOrder = [...visibleWidgets];
     const [movedWidget] = newOrder.splice(fromIndex, 1);
     newOrder.splice(toIndex, 0, movedWidget);
-    saveWidgetOrder(newOrder);
+    
+    // Reconstruct full order maintaining hidden widgets positions
+    const fullOrder = [...widgetOrder];
+    const visibleInOriginal = fullOrder.filter(id => !hiddenWidgets.includes(id));
+    
+    // Replace visible widgets with new order
+    let visibleIndex = 0;
+    const finalOrder = fullOrder.map(id => {
+      if (hiddenWidgets.includes(id)) {
+        return id;
+      } else {
+        return newOrder[visibleIndex++];
+      }
+    });
+    
+    saveWidgetOrder(finalOrder);
   };
 
   const renderWidget = (widgetId) => {
@@ -63,12 +114,15 @@ const DashboardGrid = () => {
     }
   };
 
+  // Filter out hidden widgets
+  const visibleWidgets = widgetOrder.filter(widgetId => !hiddenWidgets.includes(widgetId));
+
   return (
     <div 
       id="dashboard-grid" 
       className="container mx-auto grid grid-cols-1 md:grid-cols-2 gap-6 p-6 transition-all"
     >
-      {widgetOrder.map((widgetId, index) => (
+      {visibleWidgets.map((widgetId, index) => (
         <div 
           key={widgetId}
           draggable

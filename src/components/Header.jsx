@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-const Header = () => {
+const Header = ({ onManageWidgets }) => {
   const [isDarkMode, setIsDarkMode] = useState(false);
 
   useEffect(() => {
@@ -33,7 +33,23 @@ const Header = () => {
 
   return (
     <header className="dark:bg-dark-header light:bg-light-header p-6 shadow-lg relative transition-colors duration-300">
-      <div className="absolute right-6 top-1/2 -translate-y-1/2">
+      <div className="absolute right-6 top-1/2 -translate-y-1/2 flex gap-3">
+        {/* Manage Widgets Button */}
+        <button
+          onClick={onManageWidgets}
+          className="p-3 rounded-full dark:bg-dark-widget light:bg-light-accent hover:opacity-90 transition-all duration-300 shadow-md hover:shadow-lg"
+          aria-label="Manage widgets"
+        >
+          <svg
+            className="w-5 h-5"
+            fill="currentColor"
+            viewBox="0 0 20 20"
+          >
+            <path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/>
+          </svg>
+        </button>
+        
+        {/* Theme Toggle Button */}
         <button
           id="theme-toggle"
           onClick={toggleTheme}
@@ -60,6 +76,7 @@ const Header = () => {
           </svg>
         </button>
       </div>
+      
       <h1 className="text-3xl font-bold tracking-wide dark:text-dark-text light:text-light-text">My Life Dashboard</h1>
     </header>
   );
