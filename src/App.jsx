@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
+import { AuthProvider, useAuth } from './contexts/AuthContext';
+import Login from './components/Login';
+import Register from './components/Register';
 import Header from './components/Header';
 import DashboardGrid from './components/DashboardGrid';
 import WidgetManager from './components/WidgetManager';
 
-function App() {
+function Dashboard() {
   const [showWidgetManager, setShowWidgetManager] = useState(false);
   const [widgetOrder, setWidgetOrder] = useState([
     'todo-widget',
@@ -61,6 +64,43 @@ function App() {
         ]}
       />
     </div>
+  );
+}
+
+function AppContent() {
+  const { isAuthenticated, loading, login, register } = useAuth();
+  const [authMode, setAuthMode] = useState('login'); // 'login' or 'register'
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-light-bg to-light-accent dark:from-dark-bg dark:to-dark-accent">
+        <div className="text-light-text dark:text-dark-text text-xl">Loading...</div>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return authMode === 'login' ? (
+      <Login 
+        onLogin={login}
+        onSwitchToRegister={() => setAuthMode('register')}
+      />
+    ) : (
+      <Register 
+        onRegister={register}
+        onSwitchToLogin={() => setAuthMode('login')}
+      />
+    );
+  }
+
+  return <Dashboard />;
+}
+
+function App() {
+  return (
+    <AuthProvider>
+      <AppContent />
+    </AuthProvider>
   );
 }
 

@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
+import { useAuth } from '../contexts/AuthContext';
 
 const Header = ({ onManageWidgets }) => {
+  const { user, logout } = useAuth();
   const [isDarkMode, setIsDarkMode] = useState(false);
 
   useEffect(() => {
@@ -33,7 +35,16 @@ const Header = ({ onManageWidgets }) => {
 
   return (
     <header className="dark:bg-dark-header light:bg-light-header p-6 shadow-lg relative transition-colors duration-300">
-      <div className="absolute right-6 top-1/2 -translate-y-1/2 flex gap-3">
+      <div className="absolute right-6 top-1/2 -translate-y-1/2 flex items-center gap-3">
+        {/* User Info */}
+        {user && (
+          <div className="flex items-center gap-3 mr-2">
+            <span className="text-sm dark:text-dark-text light:text-light-text opacity-80">
+              {user.email}
+            </span>
+          </div>
+        )}
+
         {/* Manage Widgets Button */}
         <button
           onClick={onManageWidgets}
@@ -73,6 +84,21 @@ const Header = ({ onManageWidgets }) => {
             viewBox="0 0 20 20"
           >
             <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"/>
+          </svg>
+        </button>
+
+        {/* Logout Button */}
+        <button
+          onClick={logout}
+          className="p-3 rounded-full dark:bg-dark-error light:bg-light-error hover:opacity-90 transition-all duration-300 shadow-md hover:shadow-lg text-white"
+          aria-label="Logout"
+        >
+          <svg
+            className="w-5 h-5"
+            fill="currentColor"
+            viewBox="0 0 20 20"
+          >
+            <path fillRule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z" clipRule="evenodd" />
           </svg>
         </button>
       </div>

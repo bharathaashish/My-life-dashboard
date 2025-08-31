@@ -4,6 +4,8 @@ import axios from 'axios';
 import path from 'path';
 import { promises as fs } from 'fs';
 import { fileURLToPath } from 'url';
+import { initializeDatabase } from './database.js';
+import authRoutes, { authenticateToken } from './auth.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -11,9 +13,14 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-
 app.use(cors());
 app.use(express.json());
+
+// Initialize database
+initializeDatabase().catch(console.error);
+
+// Auth routes
+app.use('/api/auth', authRoutes);
 
 let wordCollection = [];
 
