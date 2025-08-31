@@ -28,6 +28,7 @@ app.post('/api/create-session', (req, res) => {
     name: req.body.name || `Session ${sessionId}`,
     tasks: [],
     users: [],
+    messages: [],
     createdAt: new Date().toISOString()
   };
   
@@ -198,6 +199,42 @@ io.on('connection', (socket) => {
   socket.on('user-typing', (data) => {
     const { sessionId, userName, isTyping } = data;
     socket.to(sessionId).emit('user-typing', { userName, isTyping });
+  });
+
+  // Handle chat messages
+  socket.on('send-message', (data) => {
+    const { sessionId, message } = data;
+    const session = sessions.get(sessionId);
+    
+    if (!session) {
+      socket.emit('error', { message: 'Session not found' });
+      return;
+    }
+
+    const newMessage = {
+      id: uuidv4(),
+      text: message.text,
+      sender: message.sender,
+      timestamp: new Date().toISOString()
+    };
+
+    // Initialize messages array if it doesn't exist
+    if (!session.messages) {
+      session.messages = [];
+    }
+
+    session.messages.push(newMessage);
+    
+    // Broadcast to all users in the session
+    io.to(sessionId).emit('message-received', { message: newMessage, session });
+    
+    console.log(`Message sent in session ${sessionId} by ${newMessage.sender}:`, newMessage.text);
+  });
+
+  // Handle chat typing indicators
+  socket.on('chat-typing', (data) => {
+    const { sessionId, userName, isTyping } = data;
+    socket.to(sessionId).emit('chat-typing', { userName, isTyping });
   });
 
   // Handle disconnect
