@@ -50,7 +50,7 @@ const TodoWidget = () => {
     <section
       id="todo-widget"
       data-widget="todo-widget"
-      className="dark:bg-dark-widget light:bg-light-widget dark:text-dark-text light:text-light-text rounded-2xl shadow-widget dark:shadow-widget-dark flex flex-col h-[280px] transition-all duration-300 hover:shadow-xl"
+      className="dark:bg-dark-widget light:bg-light-widget dark:text-dark-text light:text-light-text rounded-2xl shadow-widget dark:shadow-widget-dark flex flex-col h-[360px] transition-all duration-300 hover:shadow-xl"
     >
       <button className="drag-handle" aria-label="Drag widget">☰</button>
       <div className="p-2 border-b dark:border-dark-accent light:border-light-accent">
