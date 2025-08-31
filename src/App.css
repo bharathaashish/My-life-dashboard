@@ -1,1 +1,60 @@
-/* This file will contain any custom CSS that isn't covered by Tailwind */
+/* Custom CSS for matte finish effects and gradients */
+
+/* Dark mode matte finish effects */
+.dark body {
+  background: linear-gradient(135deg, #0a0e1a 0%, #1a1f2e 50%, #0f1419 100%) !important;
+  background-attachment: fixed !important;
+  /* Matte finish effect */
+  backdrop-filter: blur(0.5px);
+  -webkit-backdrop-filter: blur(0.5px);
+}
+
+/* Light mode widget gradients with matte finish */
+.light section,
+.light .widget,
+section:not(.dark section),
+.widget:not(.dark .widget) {
+  background: linear-gradient(135deg, #e8f4fd 0%, #f0e6ff 50%, #e1f0ff 100%) !important;
+  /* Matte finish for light mode widgets */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.8) !important;
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Dark mode widget matte finish */
+.dark section,
+.dark .widget {
+  /* Matte finish for dark mode widgets */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+/* Enhanced matte finish for all widgets */
+section,
+.widget {
+  position: relative;
+  overflow: hidden;
+}
+
+section::before,
+.widget::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.02);
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+/* Light mode specific enhancements */
+.light section::before,
+.light .widget::before,
+section:not(.dark section)::before,
+.widget:not(.dark .widget)::before {
+  background: rgba(255, 255, 255, 0.1);
+}

@@ -9,23 +9,23 @@ export default {
     extend: {
       colors: {
         dark: {
-          bg: '#15151dff',         // Modern dark background
-          widget: '#282a2cff',     // Widget background
-          header: '#0f172a',     // Header background
-          accent: '#636363ff',     // Accent color
-          text: '#f1f5f9',       // Text color
-          primary: '#3b82f6',    // Primary color
+          bg: '#0a0e1a',         // Space blackish dark blue background
+          widget: '#1a1f2e',     // Darker blue widget background for contrast
+          header: '#0f1419',     // Darker header background
+          accent: '#2a3441',     // Blue-gray accent
+          text: '#e6eef6',       // Light blue-white text
+          primary: '#4a90e2',    // Brighter blue primary
           secondary: '#8b5cf6',  // Secondary color
           success: '#10b981',    // Success color
           warning: '#f59e0b',    // Warning color
           error: '#ef4444',      // Error color
         },
         light: {
-          bg: '#f5f5f5',         // Off-white background
-          widget: '#ffffff',     // White widget background
-          header: '#eeeeee',     // Slightly darker off-white header
-          accent: '#e0e0e0',     // Light gray accent
-          text: '#212121',       // Dark gray text
+          bg: '#f8fafc',         // Very light background
+          widget: '#e8f4fd',     // Light bluish widget background
+          header: '#f0e6ff',     // Light purplish header
+          accent: '#e1f0ff',     // Light blue accent
+          text: '#2d3748',       // Dark blue-gray text
           primary: '#3b82f6',    // Primary color
           secondary: '#8b5cf6',  // Secondary color
           success: '#10b981',    // Success color

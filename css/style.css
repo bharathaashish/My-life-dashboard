@@ -213,31 +213,44 @@ button.calendar-cell { text-align: left; }
 /* Dark mode overrides: ensure no white surfaces */
 
 :root.dark, .dark {
-    /* page background will be a dark blue; widgets remain darker for contrast */
-    --bg: #000000; /* dark blue behind widgets */
-    --widget: #0b1014; /* widget surface color */
+    /* Space blackish dark blue background with matte finish */
+    --bg: linear-gradient(135deg, #0a0e1a 0%, #1a1f2e 50%, #0f1419 100%); /* space blackish dark blue gradient */
+    --widget: #1a1f2e; /* darker widget surface for contrast */
     --muted: #99a0a6;
-    --border: #172025;
+    --border: #2a3441;
     --text: #e6eef6;
-    --accent: #2b6cb0;
+    --accent: #4a90e2;
 }
 
 /* Apply dark tokens when .dark exists on html/documentElement */
 .dark body {
-    background-color: var(--bg) !important;
+    background: var(--bg) !important;
+    background-attachment: fixed !important;
     color: var(--text) !important;
+    /* Matte finish effect */
+    backdrop-filter: blur(0.5px);
+    -webkit-backdrop-filter: blur(0.5px);
 }
 
 .dark .widget, .dark section, .dark textarea, .dark input, .dark button {
     background-color: var(--widget) !important;
     color: var(--text) !important;
     border-color: var(--border) !important;
+    /* Matte finish for widgets */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
 }
 
-/* Light mode: widget backgrounds */
+/* Light mode: light bluish and purplish matte widget backgrounds */
 section, .widget {
-    background-color: #fdfeffd0; /* ash grey */
-    color: #111827;
+    background: linear-gradient(135deg, #e8f4fd 0%, #f0e6ff 50%, #e1f0ff 100%) !important; /* light bluish to purplish gradient */
+    color: #2d3748;
+    /* Matte finish for light mode widgets */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.8) !important;
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 input, textarea, button {
