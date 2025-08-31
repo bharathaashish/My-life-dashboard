@@ -7,6 +7,7 @@ import ExpenseWidget from './widgets/ExpenseWidget';
 import CalculatorWidget from './widgets/CalculatorWidget';
 import WordWidget from './widgets/WordWidget';
 import YouTubeMusicWidget from './widgets/YouTubeMusicWidget';
+import CollaborativeTodoWidget from './widgets/CollaborativeTodoWidget';
 
 const DashboardGrid = ({ onWidgetOrderChange, widgetOrder: externalWidgetOrder, hiddenWidgets: externalHiddenWidgets }) => {
   const [widgetOrder, setWidgetOrder] = useState([
@@ -17,7 +18,8 @@ const DashboardGrid = ({ onWidgetOrderChange, widgetOrder: externalWidgetOrder, 
     'expense-widget',
     'calculator-widget',
     'word-widget',
-    'youtube-music-widget'
+    'youtube-music-widget',
+    'collaborative-todo-widget'
   ]);
   const [hiddenWidgets, setHiddenWidgets] = useState([]);
 
@@ -113,6 +115,8 @@ const DashboardGrid = ({ onWidgetOrderChange, widgetOrder: externalWidgetOrder, 
         return <WordWidget />;
       case 'youtube-music-widget':
         return <YouTubeMusicWidget />;
+      case 'collaborative-todo-widget':
+        return <CollaborativeTodoWidget />;
       default:
         return null;
     }

@@ -14,7 +14,8 @@ function App() {
     'expense-widget',
     'calculator-widget',
     'word-widget',
-    'youtube-music-widget'
+    'youtube-music-widget',
+    'collaborative-todo-widget'
   ]);
   const [hiddenWidgets, setHiddenWidgets] = useState([]);
 
@@ -55,7 +56,8 @@ function App() {
           'expense-widget',
           'calculator-widget',
           'word-widget',
-          'youtube-music-widget'
+          'youtube-music-widget',
+          'collaborative-todo-widget'
         ]}
       />
     </div>
