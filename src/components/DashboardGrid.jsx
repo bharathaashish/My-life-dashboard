@@ -8,6 +8,7 @@ import CalculatorWidget from './widgets/CalculatorWidget';
 import WordWidget from './widgets/WordWidget';
 import YouTubeMusicWidget from './widgets/YouTubeMusicWidget';
 import CollaborativeTodoWidget from './widgets/CollaborativeTodoWidget';
+import AptitudeWidget from './widgets/AptitudeWidget';
 
 const DashboardGrid = ({ onWidgetOrderChange, widgetOrder: externalWidgetOrder, hiddenWidgets: externalHiddenWidgets }) => {
   const [widgetOrder, setWidgetOrder] = useState([
@@ -18,6 +19,7 @@ const DashboardGrid = ({ onWidgetOrderChange, widgetOrder: externalWidgetOrder, 
     'expense-widget',
     'calculator-widget',
     'word-widget',
+    'aptitude-widget',
     'youtube-music-widget',
     'collaborative-todo-widget'
   ]);
@@ -28,7 +30,17 @@ const DashboardGrid = ({ onWidgetOrderChange, widgetOrder: externalWidgetOrder, 
     const savedOrder = localStorage.getItem('widget-order');
     if (savedOrder) {
       try {
-        setWidgetOrder(JSON.parse(savedOrder));
+        const parsed = JSON.parse(savedOrder);
+        if (Array.isArray(parsed)) {
+          // Ensure the new Aptido widget is present for older saved orders
+          const updated = parsed.includes('aptitude-widget') ? parsed : [...parsed, 'aptitude-widget'];
+          setWidgetOrder(updated);
+          if (updated !== parsed) {
+            localStorage.setItem('widget-order', JSON.stringify(updated));
+          }
+        } else {
+          setWidgetOrder(parsed);
+        }
       } catch (e) {
         console.error('Failed to parse widget order', e);
       }
@@ -113,6 +125,8 @@ const DashboardGrid = ({ onWidgetOrderChange, widgetOrder: externalWidgetOrder, 
         return <CalculatorWidget />;
       case 'word-widget':
         return <WordWidget />;
+      case 'aptitude-widget':
+        return <AptitudeWidget />;
       case 'youtube-music-widget':
         return <YouTubeMusicWidget />;
       case 'collaborative-todo-widget':

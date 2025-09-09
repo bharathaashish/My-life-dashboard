@@ -17,6 +17,7 @@ function Dashboard() {
     'expense-widget',
     'calculator-widget',
     'word-widget',
+    'aptitude-widget',
     'youtube-music-widget',
     'collaborative-todo-widget'
   ]);
@@ -59,6 +60,7 @@ function Dashboard() {
           'expense-widget',
           'calculator-widget',
           'word-widget',
+          'aptitude-widget',
           'youtube-music-widget',
           'collaborative-todo-widget'
         ]}
