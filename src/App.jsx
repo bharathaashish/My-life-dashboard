@@ -72,11 +72,34 @@ function Dashboard() {
 function AppContent() {
   const { isAuthenticated, loading, login, register } = useAuth();
   const [authMode, setAuthMode] = useState('login'); // 'login' or 'register'
+  const [networkError, setNetworkError] = useState(false);
+
+  // Check if backend is reachable (only once, use a public endpoint)
+  useEffect(() => {
+    fetch('http://localhost:3001/api/words', { method: 'GET' })
+      .then(res => {
+        if (!res.ok) throw new Error('Backend unreachable');
+        setNetworkError(false);
+      })
+      .catch(() => setNetworkError(true));
+  }, []);
 
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-light-bg to-light-accent dark:from-dark-bg dark:to-dark-accent">
         <div className="text-light-text dark:text-dark-text text-xl">Loading...</div>
+      </div>
+    );
+  }
+
+  if (networkError) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-light-bg to-light-accent dark:from-dark-bg dark:to-dark-accent">
+        <div className="text-red-600 dark:text-red-400 text-xl mb-4">Cannot connect to backend server.<br />Please ensure the backend is running on port 3001.</div>
+        <button
+          className="px-4 py-2 bg-blue-500 text-white rounded-lg"
+          onClick={() => window.location.reload()}
+        >Retry</button>
       </div>
     );
   }

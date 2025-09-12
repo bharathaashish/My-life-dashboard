@@ -130,7 +130,7 @@ const NotesWidget = () => {
               >
                 <div className="text-sm font-medium truncate">{note.title}</div>
                 <div className="text-xs text-gray-500 truncate">
-                  {note.content.substring(0, 30)}...
+                  {(note.content || '').substring(0, 30)}...
                 </div>
               </div>
             ))

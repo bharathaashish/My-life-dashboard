@@ -360,9 +360,545 @@ function generateAverageProblem() {
   };
 }
 
+// Additional problem generators for wider coverage
+function generateProfitAndLossProblem() {
+  const cp = randomInt(50, 500);
+  const pct = [5, 10, 12, 15, 20, 25][randomInt(0, 5)];
+  const isProfit = Math.random() < 0.5;
+  const sp = isProfit ? Math.round(cp * (1 + pct / 100)) : Math.round(cp * (1 - pct / 100));
+  const question = isProfit
+    ? `An item costs ${cp} and is sold at a profit of ${pct}%. What is the selling price?`
+    : `An item costs ${cp} and is sold at a loss of ${pct}%. What is the selling price?`;
+  const options = shuffle([
+    `${sp}`,
+    `${sp + randomInt(2, 20)}`,
+    `${Math.max(1, sp - randomInt(2, 20))}`,
+    `${Math.round(sp * 1.1)}`
+  ]);
+  const answerIndex = options.indexOf(`${sp}`);
+  return {
+    id: `pl-${Date.now()}-${Math.random().toString(36).slice(2,8)}`,
+    category: 'math',
+    question,
+    options,
+    answerIndex: answerIndex === -1 ? 0 : answerIndex,
+    explanation: `Selling Price = Cost Price × (1 ${isProfit ? '+' : '-'} ${pct}/100) = ${sp}.`
+  };
+}
+
+function generateDirectionsProblem() {
+  // Construct a net displacement (dx, dy) and back-fill moves to keep integers
+  const dxBase = [3, 4, 5, 6][randomInt(0, 3)];
+  const dyBase = [3, 4, 5, 6][randomInt(0, 3)];
+  const xExtra = randomInt(0, 4);
+  const yExtra = randomInt(0, 4);
+  const north = dyBase + yExtra;
+  const south = yExtra;
+  const east = dxBase + xExtra;
+  const west = xExtra;
+  const distance = Math.sqrt(dxBase * dxBase + dyBase * dyBase);
+  const question = `A person walks ${north} km north, ${east} km east, ${south} km south, and ${west} km west. How far is the person from the starting point (in km)?`;
+  const correct = distance.toFixed(2);
+  const options = shuffle([
+    correct,
+    (distance + randomInt(1, 3)).toFixed(2),
+    Math.max(0, distance - randomInt(1, 3)).toFixed(2),
+    (distance * 1.5).toFixed(2)
+  ]);
+  const answerIndex = options.indexOf(correct);
+  return {
+    id: `dir-${Date.now()}-${Math.random().toString(36).slice(2,8)}`,
+    category: 'reasoning',
+    question,
+    options,
+    answerIndex: answerIndex === -1 ? 0 : answerIndex,
+    explanation: `Net displacement is √(dx² + dy²) where dx=${dxBase}, dy=${dyBase} ⇒ distance = ${correct} km.`
+  };
+}
+
+function generateCaseStudyProblem() {
+  // Simple data interpretation: highest sales
+  const products = ['Alpha', 'Beta', 'Gamma', 'Delta'];
+  const sales = products.map(() => randomInt(50, 200));
+  const table = products.map((p, i) => `${p}: ${sales[i]}`).join(', ');
+  const maxIdx = sales.indexOf(Math.max(...sales));
+  const question = `A company reports the following monthly sales (in units): ${table}. Which product has the highest sales?`;
+  const correct = products[maxIdx];
+  const options = shuffle([
+    correct,
+    ...shuffle(products.filter((_, i) => i !== maxIdx)).slice(0, 3)
+  ]);
+  const answerIndex = options.indexOf(correct);
+  return {
+    id: `case-${Date.now()}-${Math.random().toString(36).slice(2,8)}`,
+    category: 'reasoning',
+    question,
+    options,
+    answerIndex: answerIndex === -1 ? 0 : answerIndex,
+    explanation: `Compare the given values. The highest is ${correct} with ${sales[maxIdx]} units.`
+  };
+}
+
+function generateSeatingArrangementProblem() {
+  // Known arrangement left-to-right; ask immediate right
+  const people = ['A', 'B', 'C', 'D', 'E'];
+  const arrangement = shuffle(people);
+  // pick a pivot not at the rightmost end
+  const pivotIdx = randomInt(0, arrangement.length - 2);
+  const pivot = arrangement[pivotIdx];
+  const rightOfPivot = arrangement[pivotIdx + 1];
+  const question = `Five friends ${people.join(', ')} sit in a row facing north in the order (left to right): ${arrangement.join(', ')}. Who sits to the immediate right of ${pivot}?`;
+  const correct = rightOfPivot;
+  const options = shuffle([
+    correct,
+    ...shuffle(people.filter(p => p !== correct)).slice(0, 3)
+  ]);
+  const answerIndex = options.indexOf(correct);
+  return {
+    id: `seat-${Date.now()}-${Math.random().toString(36).slice(2,8)}`,
+    category: 'reasoning',
+    question,
+    options,
+    answerIndex: answerIndex === -1 ? 0 : answerIndex,
+    explanation: `From the given order, ${rightOfPivot} is immediately to the right of ${pivot}.`
+  };
+}
+
+function generateLogicalReasoningProblem() {
+  // Simple arithmetic progression series
+  const start = randomInt(1, 9);
+  const diff = randomInt(2, 7);
+  const seq = [start, start + diff, start + 2 * diff, start + 3 * diff, start + 4 * diff];
+  const question = `Find the next number in the series: ${seq.slice(0, 4).join(', ')}, ?`;
+  const correct = seq[4];
+  const options = shuffle([
+    `${correct}`,
+    `${correct + diff}`,
+    `${correct - diff}`,
+    `${correct + randomInt(1, 3)}`
+  ]);
+  const answerIndex = options.indexOf(`${correct}`);
+  return {
+    id: `logic-${Date.now()}-${Math.random().toString(36).slice(2,8)}`,
+    category: 'reasoning',
+    question,
+    options,
+    answerIndex: answerIndex === -1 ? 0 : answerIndex,
+    explanation: `This is an arithmetic progression with common difference ${diff}. Next = last + ${diff} = ${correct}.`
+  };
+}
+
+function generateAgeProblem() {
+  // Sum and age difference -> A older than B
+  let sum = randomInt(30, 80);
+  const diff = randomInt(2, 12);
+  // Ensure (sum + diff) is even for integer ages
+  if ((sum + diff) % 2 !== 0) sum += 1;
+  const ageA = (sum + diff) / 2;
+  const ageB = sum - ageA;
+  const question = `The sum of ages of A and B is ${sum}. A is ${diff} years older than B. What is A's age?`;
+  const options = shuffle([
+    `${ageA}`,
+    `${ageA + randomInt(1, 3)}`,
+    `${Math.max(1, ageA - randomInt(1, 3))}`,
+    `${ageB}`
+  ]);
+  const answerIndex = options.indexOf(`${ageA}`);
+  return {
+    id: `age-${Date.now()}-${Math.random().toString(36).slice(2,8)}`,
+    category: 'math',
+    question,
+    options,
+    answerIndex: answerIndex === -1 ? 0 : answerIndex,
+    explanation: `Let A = x, B = x - ${diff}. Then x + (x - ${diff}) = ${sum} ⇒ 2x = ${sum + diff} ⇒ x = ${ageA}.`
+  };
+}
+
+function generateRelationshipsProblem() {
+  const templates = [
+    {
+      q: (X, Y) => `${X} is the sister of ${Y}'s mother. How is ${X} related to ${Y}?`,
+      a: 'Aunt'
+    },
+    {
+      q: (X, Y) => `${X} is the son of ${Y}'s brother. How is ${X} related to ${Y}?`,
+      a: 'Nephew'
+    },
+    {
+      q: (X, Y) => `${X} is the daughter of ${Y}'s sister. How is ${X} related to ${Y}?`,
+      a: 'Niece'
+    }
+  ];
+  const names = ['Alex', 'Blair', 'Casey', 'Drew', 'Evan'];
+  const X = names[randomInt(0, names.length - 1)];
+  let Y = names[randomInt(0, names.length - 1)];
+  if (Y === X) Y = names[(names.indexOf(Y) + 1) % names.length];
+  const t = templates[randomInt(0, templates.length - 1)];
+  const correct = t.a;
+  const optionsPool = ['Aunt', 'Uncle', 'Mother', 'Father', 'Sister', 'Brother', 'Cousin', 'Nephew', 'Niece'];
+  const options = shuffle([
+    correct,
+    ...shuffle(optionsPool.filter(o => o !== correct)).slice(0, 3)
+  ]);
+  const answerIndex = options.indexOf(correct);
+  return {
+    id: `rel-${Date.now()}-${Math.random().toString(36).slice(2,8)}`,
+    category: 'reasoning',
+    question: t.q(X, Y),
+    options,
+    answerIndex: answerIndex === -1 ? 0 : answerIndex,
+    explanation: `By the definitions of family relations, ${correct} is the correct relation.`
+  };
+}
+
+function generateBoatsAndStreamsProblem() {
+  const u = randomInt(5, 20); // boat speed in still water
+  const v = randomInt(1, Math.max(1, Math.min(6, u - 1))); // stream speed less than u
+  const t = randomInt(1, 5);
+  const distance = (u + v) * t;
+  const question = `A boat's speed in still water is ${u} km/h and the stream speed is ${v} km/h. How far (in km) will it travel downstream in ${t} hours?`;
+  const options = shuffle([
+    `${distance}`,
+    `${distance + randomInt(2, 10)}`,
+    `${Math.max(1, distance - randomInt(2, 10))}`,
+    `${Math.round(distance * 1.25)}`
+  ]);
+  const answerIndex = options.indexOf(`${distance}`);
+  return {
+    id: `boat-${Date.now()}-${Math.random().toString(36).slice(2,8)}`,
+    category: 'math',
+    question,
+    options,
+    answerIndex: answerIndex === -1 ? 0 : answerIndex,
+    explanation: `Downstream speed = u + v = ${u + v} km/h, so distance = speed × time = ${u + v} × ${t} = ${distance} km.`
+  };
+}
+
+function generateVerbalAnalogyProblem() {
+  const pairs = [
+    { a1: 'Cat', a2: 'Kitten', b1: 'Dog', b2: 'Puppy' },
+    { a1: 'Bird', a2: 'Nest', b1: 'Bee', b2: 'Hive' },
+    { a1: 'Car', a2: 'Road', b1: 'Boat', b2: 'Water' },
+    { a1: 'Painter', a2: 'Brush', b1: 'Writer', b2: 'Pen' }
+  ];
+  const p = pairs[randomInt(0, pairs.length - 1)];
+  const correct = p.b2;
+  const distractors = shuffle(['Pup', 'Kennel', 'Sea', 'Ink', 'Paper', 'Nest', 'Calf', 'Foal', 'Hive', 'Water', 'Pen', 'Brush']).filter(x => x !== correct);
+  const options = shuffle([
+    correct,
+    ...distractors.slice(0, 3)
+  ]);
+  const answerIndex = options.indexOf(correct);
+  return {
+    id: `verb-${Date.now()}-${Math.random().toString(36).slice(2,8)}`,
+    category: 'verbal',
+    question: `${p.a1} : ${p.a2} :: ${p.b1} : ?`,
+    options,
+    answerIndex: answerIndex === -1 ? 0 : answerIndex,
+    explanation: `${p.a1} is to ${p.a2} as ${p.b1} is to ${p.b2}.`
+  };
+}
+
+// ---------------- Advanced-level generators ----------------
+function generateCompoundInterestProblem() {
+  const P = randomInt(1000, 10000);
+  const R = randomInt(5, 15);
+  const T = randomInt(2, 5);
+  const A = Math.round(P * Math.pow(1 + R / 100, T));
+  const question = `What will be the compound amount on ${P} at ${R}% per annum for ${T} years (compounded annually)?`;
+  const options = shuffle([
+    `${A}`,
+    `${Math.round(A * 1.05)}`,
+    `${Math.round(A * 0.95)}`,
+    `${Math.round(P * (1 + (R / 100) * T))}` // simple interest amount as distractor
+  ]);
+  const answerIndex = options.indexOf(`${A}`);
+  return {
+    id: `ci-${Date.now()}-${Math.random().toString(36).slice(2,8)}`,
+    category: 'math',
+    difficulty: 'advanced',
+    question,
+    options,
+    answerIndex: answerIndex === -1 ? 0 : answerIndex,
+    explanation: `A = P(1 + R/100)^T = ${P}(1 + ${R}/100)^${T} = ${A}.`
+  };
+}
+
+function generateSuccessiveDiscountsProblem() {
+  const mrp = randomInt(200, 2000);
+  const d1 = randomInt(10, 35);
+  const d2 = randomInt(10, 35);
+  const finalPrice = Math.round(mrp * (1 - d1 / 100) * (1 - d2 / 100));
+  const eqDisc = 100 - (100 - d1) * (100 - d2) / 100;
+  const eqDiscStr = eqDisc.toFixed(2);
+  const question = `On an article with MRP ${mrp}, two successive discounts of ${d1}% and ${d2}% are offered. What is the equivalent single discount (in %)?`;
+  const options = shuffle([
+    `${eqDiscStr}`,
+    `${(eqDisc + randomInt(2, 5)).toFixed(2)}`,
+    `${Math.max(1, eqDisc - randomInt(2, 5)).toFixed(2)}`,
+    `${(d1 + d2).toFixed(2)}` // common trap
+  ]);
+  const answerIndex = options.indexOf(`${eqDiscStr}`);
+  return {
+    id: `disc-${Date.now()}-${Math.random().toString(36).slice(2,8)}`,
+    category: 'math',
+    difficulty: 'advanced',
+    question,
+    options,
+    answerIndex: answerIndex === -1 ? 0 : answerIndex,
+    explanation: `Equivalent discount = 100 − [(100 − d1)(100 − d2)]/100 = ${eqDiscStr}%.`
+  };
+}
+
+function generateMixtureAlligationProblem() {
+  const q1 = randomInt(3, 10);
+  const q2 = randomInt(3, 10);
+  let p1 = randomInt(10, 40);
+  let p2 = randomInt(50, 90);
+  if (p1 >= p2) { p1 = 30; p2 = 70; }
+  const finalPct = ((p1 * q1 + p2 * q2) / (q1 + q2)).toFixed(2);
+  const question = `Two solutions with ${p1}% and ${p2}% concentration are mixed in quantities ${q1} L and ${q2} L respectively. What is the concentration (%) of the resulting mixture?`;
+  const options = shuffle([
+    `${finalPct}`,
+    `${(parseFloat(finalPct) + randomInt(2, 6)).toFixed(2)}`,
+    `${Math.max(1, parseFloat(finalPct) - randomInt(2, 6)).toFixed(2)}`,
+    `${((p1 + p2) / 2).toFixed(2)}`
+  ]);
+  const answerIndex = options.indexOf(`${finalPct}`);
+  return {
+    id: `mix-${Date.now()}-${Math.random().toString(36).slice(2,8)}`,
+    category: 'math',
+    difficulty: 'advanced',
+    question,
+    options,
+    answerIndex: answerIndex === -1 ? 0 : answerIndex,
+    explanation: `Weighted average = (p1·q1 + p2·q2)/(q1+q2) = ${finalPct}%.`
+  };
+}
+
+function generateTimeAndWorkProblem() {
+  const a = randomInt(8, 20);
+  const b = randomInt(12, 28);
+  const t = (a * b) / (a + b);
+  const tStr = t.toFixed(2);
+  const question = `A can finish a work in ${a} days and B can finish it in ${b} days. Working together, in how many days will they finish the work?`;
+  const options = shuffle([
+    `${tStr}`,
+    `${(t + randomInt(2, 5)).toFixed(2)}`,
+    `${Math.max(1, t - randomInt(1, 3)).toFixed(2)}`,
+    `${(a + b).toFixed(2)}`
+  ]);
+  const answerIndex = options.indexOf(`${tStr}`);
+  return {
+    id: `work-${Date.now()}-${Math.random().toString(36).slice(2,8)}`,
+    category: 'math',
+    difficulty: 'advanced',
+    question,
+    options,
+    answerIndex: answerIndex === -1 ? 0 : answerIndex,
+    explanation: `Combined rate = 1/${a} + 1/${b} = ${(1/a + 1/b).toFixed(4)} ⇒ time = 1/rate = ${tStr} days.`
+  };
+}
+
+function generatePipesAndCisternsProblem() {
+  const a = randomInt(10, 40); // fill
+  const b = randomInt(30, 90); // empty
+  const netRate = 1 / a - 1 / b;
+  const t = 1 / netRate;
+  const tStr = t.toFixed(2);
+  const question = `Pipe A can fill a tank in ${a} minutes, while leak B can empty it in ${b} minutes. If both are open, how long will it take to fill the tank?`;
+  const options = shuffle([
+    `${tStr}`,
+    `${(t + randomInt(5, 10)).toFixed(2)}`,
+    `${Math.max(1, t - randomInt(2, 5)).toFixed(2)}`,
+    `${(a + b).toFixed(2)}`
+  ]);
+  const answerIndex = options.indexOf(`${tStr}`);
+  return {
+    id: `pipe-${Date.now()}-${Math.random().toString(36).slice(2,8)}`,
+    category: 'math',
+    difficulty: 'advanced',
+    question,
+    options,
+    answerIndex: answerIndex === -1 ? 0 : answerIndex,
+    explanation: `Net rate = 1/${a} − 1/${b} = ${netRate.toFixed(4)} tank/min ⇒ time = 1/rate = ${tStr} min.`
+  };
+}
+
+function nCr(n, r) {
+  function fact(x) { let p = 1; for (let i = 2; i <= x; i++) p *= i; return p; }
+  return Math.round(fact(n) / (fact(r) * fact(n - r)));
+}
+
+function generatePermutationCombinationProblem() {
+  const n = randomInt(6, 10);
+  const r = randomInt(2, Math.min(5, n - 1));
+  const val = nCr(n, r);
+  const question = `In how many ways can ${r} objects be chosen from ${n} distinct objects?`;
+  const options = shuffle([
+    `${val}`,
+    `${val + randomInt(2, 15)}`,
+    `${Math.max(1, val - randomInt(2, 15))}`,
+    `${nCr(n, r - 1)}`
+  ]);
+  const answerIndex = options.indexOf(`${val}`);
+  return {
+    id: `ncr-${Date.now()}-${Math.random().toString(36).slice(2,8)}`,
+    category: 'math',
+    difficulty: 'advanced',
+    question,
+    options,
+    answerIndex: answerIndex === -1 ? 0 : answerIndex,
+    explanation: `Number of combinations = nCr = ${n}!/(${r}!·${n - r}!) = ${val}.`
+  };
+}
+
+function generateProbabilityProblem() {
+  const R = randomInt(3, 6);
+  const B = randomInt(3, 6);
+  const total = R + B;
+  const comb = (n, k) => nCr(n, k);
+  const num = comb(R, 2);
+  const den = comb(total, 2);
+  const p = (num / den);
+  const pStr = p.toFixed(4);
+  const question = `A bag contains ${R} red and ${B} black balls. Two balls are drawn at random without replacement. What is the probability that both are red?`;
+  const options = shuffle([
+    `${pStr}`,
+    `${(p + 0.05).toFixed(4)}`,
+    `${Math.max(0, p - 0.05).toFixed(4)}`,
+    `${(num / comb(total, 1)).toFixed(4)}`
+  ]);
+  const answerIndex = options.indexOf(`${pStr}`);
+  return {
+    id: `prob-${Date.now()}-${Math.random().toString(36).slice(2,8)}`,
+    category: 'math',
+    difficulty: 'advanced',
+    question,
+    options,
+    answerIndex: answerIndex === -1 ? 0 : answerIndex,
+    explanation: `P(2 red) = C(${R},2)/C(${total},2) = ${num}/${den} = ${pStr}.`
+  };
+}
+
+function generateTrainsRelativeSpeedProblem() {
+  const L1 = randomInt(120, 300); // m
+  const L2 = randomInt(120, 300); // m
+  const S1 = randomInt(40, 80);   // km/h
+  const S2 = randomInt(30, 70);   // km/h
+  const rel = (S1 + S2) * 1000 / 3600; // m/s
+  const t = (L1 + L2) / rel;
+  const tSec = Math.round(t);
+  const question = `Two trains of lengths ${L1} m and ${L2} m are moving in opposite directions at ${S1} km/h and ${S2} km/h respectively. In how many seconds will they completely cross each other?`;
+  const options = shuffle([
+    `${tSec}`,
+    `${tSec + randomInt(3, 12)}`,
+    `${Math.max(1, tSec - randomInt(3, 12))}`,
+    `${Math.round((L1 + L2) / (S1 * 1000 / 3600))}`
+  ]);
+  const answerIndex = options.indexOf(`${tSec}`);
+  return {
+    id: `train-${Date.now()}-${Math.random().toString(36).slice(2,8)}`,
+    category: 'math',
+    difficulty: 'advanced',
+    question,
+    options,
+    answerIndex: answerIndex === -1 ? 0 : answerIndex,
+    explanation: `Relative speed = ${S1}+${S2} km/h = ${((S1 + S2) * 1000 / 3600).toFixed(2)} m/s; time = total length / relative speed = ${(L1 + L2)} / ${(rel).toFixed(2)} ≈ ${tSec} s.`
+  };
+}
+
+function generateClockAngleProblem() {
+  const H = randomInt(1, 12);
+  const M = randomInt(0, 59);
+  const angle = Math.abs(30 * H - 5.5 * M);
+  const theta = Math.min(angle, 360 - angle);
+  const thetaStr = theta.toFixed(1);
+  const question = `Find the smaller angle between the hour and minute hands at ${String(H).padStart(2, '0')}:${String(M).padStart(2, '0')}.`;
+  const options = shuffle([
+    `${thetaStr}`,
+    `${(parseFloat(thetaStr) + randomInt(5, 15)).toFixed(1)}`,
+    `${Math.max(0, parseFloat(thetaStr) - randomInt(5, 15)).toFixed(1)}`,
+    `${(180 - parseFloat(thetaStr)).toFixed(1)}`
+  ]);
+  const answerIndex = options.indexOf(`${thetaStr}`);
+  return {
+    id: `clock-${Date.now()}-${Math.random().toString(36).slice(2,8)}`,
+    category: 'reasoning',
+    difficulty: 'advanced',
+    question,
+    options,
+    answerIndex: answerIndex === -1 ? 0 : answerIndex,
+    explanation: `Angle = |30H − 5.5M|, choose the smaller with 360 − angle ⇒ ${thetaStr}°.`
+  };
+}
+
+function generateSyllogismProblem() {
+  const bank = [
+    {
+      st: ['All cats are animals.', 'Some animals are pets.'],
+      cn: ['Some cats may be pets.', 'No animals are cats.'],
+      ans: 'Only I follows'
+    },
+    {
+      st: ['All cars are vehicles.', 'No vehicle is a toy.'],
+      cn: ['No car is a toy.', 'Some cars are toys.'],
+      ans: 'Only I follows'
+    },
+    {
+      st: ['Some students are athletes.', 'All athletes are disciplined.'],
+      cn: ['Some students are disciplined.', 'No student is disciplined.'],
+      ans: 'Only I follows'
+    }
+  ];
+  const pick = bank[randomInt(0, bank.length - 1)];
+  const question = `Statements: 1) ${pick.st[0]} 2) ${pick.st[1]}\nConclusions: I) ${pick.cn[0]} II) ${pick.cn[1]}`;
+  const options = shuffle(['Only I follows', 'Only II follows', 'Both I and II follow', 'Neither I nor II follows']);
+  const answerIndex = options.indexOf(pick.ans);
+  return {
+    id: `syll-${Date.now()}-${Math.random().toString(36).slice(2,8)}`,
+    category: 'reasoning',
+    difficulty: 'advanced',
+    question,
+    options,
+    answerIndex: answerIndex === -1 ? 0 : answerIndex,
+    explanation: `By basic Venn logic for syllogisms, the correct option is: ${pick.ans}.`
+  };
+}
+
+// ---------------- Selection logic with bias towards advanced ----------------
 function generateProblem() {
-  const generators = [generatePercentageProblem, generateSpeedDistanceProblem, generateAverageProblem];
-  const gen = generators[randomInt(0, generators.length - 1)];
+  const easy = [
+    generatePercentageProblem,
+    generateSpeedDistanceProblem,
+    generateAverageProblem,
+    generateProfitAndLossProblem,
+    generateDirectionsProblem,
+    generateCaseStudyProblem,
+    generateSeatingArrangementProblem,
+    generateLogicalReasoningProblem,
+    generateAgeProblem,
+    generateRelationshipsProblem,
+    generateBoatsAndStreamsProblem,
+    generateVerbalAnalogyProblem
+  ];
+
+  const advanced = [
+    generateCompoundInterestProblem,
+    generateSuccessiveDiscountsProblem,
+    generateMixtureAlligationProblem,
+    generateTimeAndWorkProblem,
+    generatePipesAndCisternsProblem,
+    generatePermutationCombinationProblem,
+    generateProbabilityProblem,
+    generateTrainsRelativeSpeedProblem,
+    generateClockAngleProblem,
+    generateSyllogismProblem
+  ];
+
+  const pickAdvanced = Math.random() < 0.7; // 70% advanced bias
+  const pool = pickAdvanced ? advanced : [...easy, ...advanced];
+  const gen = pool[randomInt(0, pool.length - 1)];
   return gen();
 }
 
